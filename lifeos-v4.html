@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LifeOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ivory:#FAF8F4; --ivory-2:#F4F1EB; --ivory-3:#EDE8DF;
+  --parchment:#E8E0D0; --stone:#C4B8A4; --mist:#9A9088;
+  --dusk:#6B6058; --ink:#2C2420;
+  --coral:#E8705A; --coral-s:rgba(232,112,90,0.12); --coral-m:rgba(232,112,90,0.25);
+  --sage:#7A9E87; --sage-s:rgba(122,158,135,0.12);
+  --gold:#C9A45A; --gold-s:rgba(201,164,90,0.12);
+  --sky:#7AAEC8; --sky-s:rgba(122,174,200,0.12);
+  --blush:#D4877A;
+  --ai:#8B6BAE; --ai-s:rgba(139,107,174,0.12); --ai-m:rgba(139,107,174,0.22);
+  --glass-1:rgba(255,252,248,0.80); --glass-2:rgba(255,252,248,0.55);
+  --glass-e:rgba(255,255,255,0.92); --glass-i:rgba(255,255,255,0.6);
+  --sh-w:rgba(44,36,32,0.07); --sh-d:rgba(44,36,32,0.14);
+  --f-d:'Cormorant Garamond',Georgia,serif;
+  --f-u:'Syne',system-ui,sans-serif;
+  --r-sm:10px; --r-md:18px; --r-lg:24px; --r-xl:32px; --r-pill:100px;
+  --pad:22px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;height:100%;}
+body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* ── AURORA ── */
+.aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.al{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform;}
+.al-1{width:700px;height:600px;top:-200px;right:-150px;background:radial-gradient(ellipse,rgba(232,200,170,0.55),rgba(240,215,190,0.3)50%,transparent 75%);animation:f1 22s ease-in-out infinite alternate;}
+.al-2{width:500px;height:500px;bottom:-100px;left:-100px;background:radial-gradient(ellipse,rgba(200,220,210,0.45),rgba(180,210,195,0.2)50%,transparent 75%);animation:f2 28s ease-in-out infinite alternate;}
+.al-3{width:400px;height:350px;top:35%;left:20%;background:radial-gradient(ellipse,rgba(220,200,230,0.22),transparent 70%);animation:f3 18s ease-in-out infinite alternate;}
+.al-4{width:300px;height:280px;top:10%;left:10%;background:radial-gradient(ellipse,rgba(232,200,155,0.28),transparent 70%);animation:f1 32s ease-in-out infinite alternate-reverse;}
+@keyframes f1{from{transform:translate(0,0)scale(1);}to{transform:translate(40px,30px)scale(1.1);}}
+@keyframes f2{from{transform:translate(0,0)scale(1);}to{transform:translate(-30px,-40px)scale(1.08);}}
+@keyframes f3{from{transform:translate(0,0)scale(1)rotate(0deg);}to{transform:translate(20px,-20px)scale(1.12)rotate(8deg);}}
+.aurora::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.03'/%3E%3C/svg%3E");opacity:0.5;}
+
+/* ── APP SHELL ── */
+.app{position:relative;z-index:1;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+.app-hdr{padding:18px var(--pad) 0;display:flex;align-items:flex-start;justify-content:space-between;}
+.hdr-l{}
+.time-lbl{font-family:var(--f-u);font-size:11px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--mist);margin-bottom:3px;}
+.greet{font-family:var(--f-d);font-size:36px;font-weight:400;letter-spacing:-0.5px;line-height:1.05;color:var(--ink);}
+.greet em{font-style:italic;font-weight:300;color:var(--coral);}
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:4px;}
+.clock-disp{font-family:var(--f-d);font-size:28px;font-weight:300;letter-spacing:-1px;color:var(--dusk);line-height:1;}
+.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--blush));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;box-shadow:0 4px 16px rgba(232,112,90,0.35),0 1px 0 rgba(255,255,255,0.5)inset;}
+.date-strip{padding:14px var(--pad) 6px;display:flex;align-items:center;gap:8px;}
+.date-chip{font-family:var(--f-u);font-size:11px;font-weight:600;letter-spacing:0.3px;color:var(--mist);}
+.date-dot{width:3px;height:3px;border-radius:50%;background:var(--stone);}
+
+/* ── TAB BAR ── */
+.tab-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;width:calc(100% - 40px);max-width:380px;}
+.tab-bar{background:var(--glass-1);backdrop-filter:blur(32px)saturate(200%);-webkit-backdrop-filter:blur(32px)saturate(200%);border:1px solid var(--glass-e);border-radius:var(--r-pill);padding:6px;display:flex;gap:2px;box-shadow:0 8px 32px var(--sh-d),0 2px 8px var(--sh-w),0 1px 0 rgba(255,255,255,0.9)inset;}
+.tab-btn{flex:1;border:none;background:none;cursor:pointer;padding:9px 4px 8px;border-radius:var(--r-pill);display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.3s cubic-bezier(0.34,1.5,0.64,1);}
+.tab-icon{font-size:18px;line-height:1;transition:transform 0.3s cubic-bezier(0.34,1.5,0.64,1);}
+.tab-lbl{font-family:var(--f-u);font-size:9.5px;font-weight:700;letter-spacing:0.3px;color:var(--stone);transition:color 0.2s;}
+.tab-btn.active{background:var(--coral);box-shadow:0 3px 14px rgba(232,112,90,0.4);}
+.tab-btn.active .tab-icon{transform:scale(1.1)translateY(-1px);}
+.tab-btn.active .tab-lbl{color:rgba(255,255,255,0.85);}
+
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px var(--pad) 140px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* ── PAGES ── */
+.page{display:none;}
+.page.active{display:block;animation:bloom 0.42s cubic-bezier(0.22,1,0.36,1)both;}
+@keyframes bloom{from{opacity:0;transform:translateY(18px)scale(0.984);}to{opacity:1;transform:translateY(0)scale(1);}}
+.page.active>*{animation:rise 0.5s cubic-bezier(0.22,1,0.36,1)both;}
+.page.active>*:nth-child(1){animation-delay:.04s}.page.active>*:nth-child(2){animation-delay:.08s}
+.page.active>*:nth-child(3){animation-delay:.12s}.page.active>*:nth-child(4){animation-delay:.16s}
+.page.active>*:nth-child(5){animation-delay:.20s}.page.active>*:nth-child(6){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── LABELS ── */
+.sec-lbl{font-family:var(--f-u);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--stone);margin:20px 0 10px 2px;display:flex;align-items:center;gap:8px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--parchment),transparent);}
+.sec-title{font-family:var(--f-d);font-size:26px;font-weight:500;letter-spacing:-0.3px;color:var(--ink);margin:20px 0 14px 2px;line-height:1.1;}
+.sec-title span{font-style:italic;font-weight:300;color:var(--coral);}
+
+/* ── CARD ── */
+.card{background:var(--glass-1);backdrop-filter:blur(30px)saturate(180%);-webkit-backdrop-filter:blur(30px)saturate(180%);border:1px solid var(--glass-e);border-radius:var(--r-lg);box-shadow:0 4px 28px var(--sh-w),0 1px 0 var(--glass-i)inset;overflow:hidden;transition:transform 0.2s cubic-bezier(0.34,1.5,0.64,1);}
+.card:active{transform:scale(0.988);}
+.cp{padding:20px;}
+
+/* ── OUTFIT HERO ── */
+.outfit-card{position:relative;overflow:hidden;border-radius:var(--r-xl);margin-bottom:14px;background:linear-gradient(160deg,rgba(255,253,249,0.90),rgba(248,244,238,0.82));backdrop-filter:blur(40px)saturate(200%);-webkit-backdrop-filter:blur(40px)saturate(200%);border:1px solid var(--glass-e);box-shadow:0 12px 48px var(--sh-w),0 1px 0 rgba(255,255,255,0.95)inset;}
+.outfit-card::after{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(232,112,90,0.10),transparent 65%);pointer-events:none;}
+.oi{padding:22px 22px 18px;position:relative;z-index:1;}
+.oh-eye{display:flex;align-items:center;gap:7px;margin-bottom:16px;}
+.oh-pulse{width:7px;height:7px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 0 rgba(232,112,90,0.4);animation:pr 2.5s ease-in-out infinite;}
+@keyframes pr{0%{box-shadow:0 0 0 0 rgba(232,112,90,0.5);}60%{box-shadow:0 0 0 7px rgba(232,112,90,0);}100%{box-shadow:0 0 0 0 rgba(232,112,90,0);}}
+.oh-eye-txt{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--coral);}
+.oh-pair{display:flex;align-items:stretch;gap:10px;margin-bottom:16px;}
+.oh-g{flex:1;border-radius:var(--r-md);overflow:hidden;border:1px solid rgba(255,255,255,0.9);box-shadow:0 4px 18px var(--sh-w);background:rgba(255,255,255,0.7);transition:transform 0.25s cubic-bezier(0.34,1.5,0.64,1);}
+.oh-g:active{transform:scale(0.96);}
+.oh-sw{height:90px;display:flex;align-items:center;justify-content:center;}
+.oh-sw-inner{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 3px 12px rgba(0,0,0,0.08);}
+.oh-gfoot{padding:10px 12px 12px;background:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.8);}
+.oh-gname{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:-0.1px;line-height:1.3;}
+.oh-gcolor{font-size:10px;color:var(--mist);margin-top:2px;font-weight:500;}
+.oh-div{display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--f-d);font-size:22px;font-weight:300;color:var(--parchment);padding-top:8px;}
+
+/* Harmony badge on outfit */
+.harmony-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--r-pill);font-size:11px;font-weight:700;margin-bottom:12px;}
+.hb-excellent{background:rgba(122,158,135,0.15);color:var(--sage);}
+.hb-good{background:rgba(201,164,90,0.13);color:var(--gold);}
+.hb-ok{background:rgba(122,174,200,0.13);color:var(--sky);}
+.hb-avoid{background:rgba(232,112,90,0.12);color:var(--coral);}
+
+.oh-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.oh-tag{font-size:11px;font-weight:600;padding:5px 12px;border-radius:var(--r-pill);}
+.t-coral{background:var(--coral-s);color:var(--coral);}
+.t-sage{background:var(--sage-s);color:var(--sage);}
+.t-gold{background:var(--gold-s);color:var(--gold);}
+.t-sky{background:var(--sky-s);color:var(--sky);}
+.t-ai{background:var(--ai-s);color:var(--ai);}
+.oh-actions{display:flex;gap:8px;}
+.btn-p{flex:2;padding:14px;background:linear-gradient(135deg,var(--coral),var(--blush));border:none;border-radius:var(--r-md);font-family:var(--f-u);font-size:14px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:-0.1px;box-shadow:0 4px 18px rgba(232,112,90,0.4);transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1);}
+.btn-p:active{transform:scale(0.97);}
+.btn-s{flex:1;padding:14px;background:rgba(44,36,32,0.06);border:1px solid rgba(44,36,32,0.08);border-radius:var(--r-md);font-family:var(--f-u);font-size:13px;font-weight:700;color:var(--dusk);cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1);}
+.btn-s:active{transform:scale(0.97);}
+
+/* ── BENTO ── */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.bc{background:var(--glass-1);backdrop-filter:blur(28px)saturate(180%);-webkit-backdrop-filter:blur(28px)saturate(180%);border:1px solid var(--glass-e);border-radius:var(--r-lg);padding:18px 16px 16px;box-shadow:0 4px 20px var(--sh-w),0 1px 0 rgba(255,255,255,0.8)inset;position:relative;overflow:hidden;transition:transform 0.22s cubic-bezier(0.34,1.5,0.64,1);}
+.bc:active{transform:scale(0.96);}
+.bc::after{content:'';position:absolute;bottom:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:0.18;}
+.bc-coral::after{background:var(--coral);}.bc-sage::after{background:var(--sage);}.bc-gold::after{background:var(--gold);}.bc-sky::after{background:var(--sky);}
+.bc-icon{font-size:20px;margin-bottom:10px;}
+.bc-num{font-family:var(--f-d);font-size:40px;font-weight:500;line-height:1;letter-spacing:-1.5px;color:var(--ink);}
+.bc-coral .bc-num{color:var(--coral);}.bc-sage .bc-num{color:var(--sage);}.bc-gold .bc-num{color:var(--gold);}.bc-sky .bc-num{color:var(--sky);}
+.bc-lbl{font-size:11px;font-weight:600;color:var(--mist);margin-top:5px;letter-spacing:0.2px;}
+
+/* ── WEEK ── */
+.week-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
+.week-row::-webkit-scrollbar{display:none;}
+.day-tile{flex-shrink:0;min-width:68px;background:var(--glass-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-e);border-radius:var(--r-md);padding:12px 10px 10px;text-align:center;box-shadow:0 3px 12px var(--sh-w);transition:all 0.22s cubic-bezier(0.34,1.5,0.64,1);}
+.day-tile.is-today{background:linear-gradient(160deg,var(--coral),var(--blush));border-color:rgba(232,112,90,0.4);box-shadow:0 6px 22px rgba(232,112,90,0.35);}
+.day-tile.is-future{opacity:0.55;}
+.dt-name{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mist);margin-bottom:7px;}
+.day-tile.is-today .dt-name{color:rgba(255,255,255,0.8);}
+.dt-emoji{font-size:19px;display:block;margin-bottom:6px;line-height:1;}
+.dt-num{font-family:var(--f-d);font-size:17px;font-weight:500;color:var(--dusk);letter-spacing:-0.3px;}
+.day-tile.is-today .dt-num{color:#fff;}
+
+/* ── LAUNDRY QUICK ── */
+.lq{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.lq-col{padding:14px 10px;text-align:center;}
+.lq-col+.lq-col{border-left:1px solid rgba(196,184,164,0.3);}
+.lq-num{font-family:var(--f-d);font-size:32px;font-weight:500;line-height:1;letter-spacing:-1px;}
+.lq-cl .lq-num{color:var(--sage);}.lq-wo .lq-num{color:var(--gold);}.lq-wa .lq-num{color:var(--coral);}
+.lq-lbl{font-size:10px;font-weight:600;color:var(--mist);margin-top:3px;letter-spacing:0.5px;}
+.wd-row{border-top:1px solid rgba(196,184,164,0.25);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.wd-txt{font-size:12px;font-weight:600;color:var(--mist);flex:1;}
+.wd-btns{display:flex;gap:6px;}
+.wd-btn{font-size:11px;font-weight:700;padding:6px 12px;border-radius:var(--r-pill);border:1px solid rgba(196,184,164,0.4);background:rgba(255,255,255,0.5);color:var(--dusk);cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1);}
+.wd-btn:active{transform:scale(0.94);}
+.wd-btn.on{background:var(--coral);color:#fff;border-color:var(--coral);box-shadow:0 3px 10px rgba(232,112,90,0.35);}
+
+/* ── SEG CONTROL ── */
+.seg{display:flex;background:rgba(196,184,164,0.18);border-radius:var(--r-pill);padding:3px;gap:2px;margin-bottom:16px;}
+.seg-btn{flex:1;padding:9px 8px;border:none;background:none;cursor:pointer;border-radius:var(--r-pill);font-family:var(--f-u);font-size:12px;font-weight:700;color:var(--mist);transition:all 0.25s cubic-bezier(0.34,1.5,0.64,1);}
+.seg-btn.on{background:var(--glass-1);color:var(--ink);box-shadow:0 2px 10px var(--sh-w);}
+
+/* ── GARMENT GRID ── */
+.g-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.g-tile{background:var(--glass-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-e);border-radius:var(--r-md);overflow:hidden;box-shadow:0 3px 12px var(--sh-w);transition:all 0.22s cubic-bezier(0.34,1.5,0.64,1);cursor:pointer;position:relative;}
+.g-tile:active{transform:scale(0.94);}
+.g-tile.is-wash{opacity:0.52;}
+.g-sw{height:78px;display:flex;align-items:center;justify-content:center;position:relative;}
+.g-ew{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 12px rgba(0,0,0,0.07);}
+.wash-bdg{position:absolute;bottom:0;left:0;right:0;background:rgba(232,112,90,0.82);color:#fff;font-size:8px;font-weight:800;text-align:center;padding:2px 4px;letter-spacing:.8px;text-transform:uppercase;}
+
+/* Harmony score pill on garment tile */
+.g-harm{position:absolute;top:5px;right:5px;font-size:8px;font-weight:800;padding:2px 6px;border-radius:var(--r-pill);border:none;}
+.gh-ex{background:rgba(122,158,135,0.22);color:var(--sage);}
+.gh-gd{background:rgba(201,164,90,0.2);color:var(--gold);}
+.gh-ok{background:rgba(122,174,200,0.2);color:var(--sky);}
+
+.g-foot{padding:8px 10px 10px;}
+.g-tname{font-size:10px;font-weight:700;color:var(--ink);letter-spacing:-0.1px;line-height:1.3;}
+.g-tsub{font-size:9px;color:var(--mist);margin-top:2px;}
+.add-tile{border:1.5px dashed rgba(196,184,164,0.55);border-radius:var(--r-md);height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--stone);font-size:11px;font-weight:700;background:rgba(255,255,255,0.3);transition:all 0.2s;}
+.add-tile:active{transform:scale(0.95);background:rgba(232,112,90,0.05);color:var(--coral);border-color:var(--coral);}
+.add-tile-icon{font-size:22px;}
+
+/* ── MATRIX ── */
+.mx-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.mx-wrap::-webkit-scrollbar{display:none;}
+.mx-table{border-collapse:collapse;width:100%;min-width:300px;}
+.mx-hc{padding:10px 8px;font-size:9.5px;font-weight:700;letter-spacing:.3px;color:var(--mist);text-align:center;border-bottom:1px solid rgba(196,184,164,0.3);}
+.mx-hc:first-child{text-align:left;padding-left:16px;}
+.mx-rl{padding:10px 10px 10px 16px;font-size:11px;font-weight:700;color:var(--dusk);border-right:1px solid rgba(196,184,164,0.2);white-space:nowrap;vertical-align:middle;}
+.mx-cell{padding:0;text-align:center;border-bottom:1px solid rgba(196,184,164,0.12);vertical-align:middle;}
+.mx-in{padding:8px 5px;cursor:default;transition:background .15s;}
+.mx-cell.mx-av .mx-in{cursor:pointer;}
+.mx-cell.mx-av .mx-in:hover{background:rgba(122,158,135,0.08);}
+.mx-dots{display:flex;justify-content:center;gap:3px;margin-bottom:3px;}
+.mx-dot{width:9px;height:9px;border-radius:50%;border:1px solid rgba(0,0,0,0.06);}
+.mx-sc{font-size:9px;font-weight:700;letter-spacing:.3px;}
+.mx-av .mx-sc{color:var(--sage);}.mx-used .mx-sc{color:var(--gold);}.mx-today .mx-sc{color:var(--coral);}
+/* Harmony bar in matrix */
+.mx-hbar{height:2px;border-radius:1px;margin-top:3px;background:rgba(196,184,164,0.2);}
+.mx-hfill{height:100%;border-radius:1px;transition:width 0.4s;}
+
+/* ── COMBO HISTORY ── */
+.chi{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(196,184,164,0.18);}
+.chi:last-child{border-bottom:none;}
+.chi-date{font-size:11px;font-weight:600;color:var(--stone);min-width:78px;}
+.chi-em{font-size:20px;}
+.chi-names{flex:1;}
+.chi-n1{font-size:12px;font-weight:700;color:var(--ink);}
+.chi-n2{font-size:11px;color:var(--mist);font-weight:500;}
+.chi-harm{font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r-pill);}
+
+/* ── LAUNDRY ── */
+.l-board{display:flex;gap:10px;margin-bottom:14px;}
+.l-col{flex:1;background:var(--glass-1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-e);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 4px 18px var(--sh-w);}
+.l-hd{padding:13px 12px 10px;border-bottom:1px solid rgba(196,184,164,0.2);display:flex;align-items:center;justify-content:space-between;}
+.l-hd-t{font-size:11px;font-weight:800;letter-spacing:.2px;}
+.l-hd-n{font-family:var(--f-d);font-size:22px;font-weight:500;letter-spacing:-0.5px;}
+.lc-cl .l-hd-t,.lc-cl .l-hd-n{color:var(--sage);}.lc-wo .l-hd-t,.lc-wo .l-hd-n{color:var(--gold);}.lc-wa .l-hd-t,.lc-wa .l-hd-n{color:var(--coral);}
+.l-list{padding:8px;display:flex;flex-direction:column;gap:5px;min-height:60px;}
+.l-item{background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.8);border-radius:var(--r-sm);padding:7px 8px;display:flex;align-items:center;gap:6px;transition:all .18s;}
+.l-item:active{transform:scale(0.96);}
+.li-icon{font-size:14px;flex-shrink:0;}
+.li-name{flex:1;font-size:10px;font-weight:700;color:var(--ink);line-height:1.2;}
+.li-acts{display:flex;gap:3px;}
+.la{width:20px;height:20px;border-radius:50%;border:none;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s cubic-bezier(0.34,1.5,0.64,1);}
+.la:active{transform:scale(0.88);}
+.la-sg{background:var(--sage-s);color:var(--sage);}.la-gd{background:var(--gold-s);color:var(--gold);}.la-co{background:var(--coral-s);color:var(--coral);}
+.l-empty{font-size:10px;font-weight:600;color:var(--stone);text-align:center;padding:14px 8px;}
+
+/* ── ROUTINE ── */
+.r-list{display:flex;flex-direction:column;gap:8px;}
+.r-item{background:var(--glass-1);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--glass-e);border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 3px 12px var(--sh-w);transition:all .2s cubic-bezier(0.34,1.5,0.64,1);position:relative;overflow:hidden;}
+.r-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;background:var(--parchment);}
+.r-item.r-act::before{background:var(--coral);}.r-item.r-dn::before{background:var(--sage);}
+.r-item.r-dn{opacity:.55;}.r-item.r-act{border-color:rgba(232,112,90,.3);}
+.r-time{font-family:var(--f-d);font-size:18px;font-weight:500;letter-spacing:-.3px;color:var(--mist);min-width:46px;flex-shrink:0;}
+.r-item.r-act .r-time{color:var(--coral);}
+.r-name{flex:1;font-size:13px;font-weight:600;color:var(--ink);}
+.r-item.r-dn .r-name{text-decoration:line-through;color:var(--mist);}
+.r-cat{font-size:9px;font-weight:700;padding:4px 9px;border-radius:var(--r-pill);text-transform:uppercase;letter-spacing:.3px;}
+.rc-w{background:var(--coral-s);color:var(--coral);}.rc-r{background:var(--sage-s);color:var(--sage);}.rc-wk{background:var(--gold-s);color:var(--gold);}
+.r-del{background:none;border:none;cursor:pointer;color:var(--stone);font-size:16px;padding:0 2px;transition:color .15s;}
+.r-del:hover{color:var(--coral);}
+
+/* ── CALC ── */
+.calc-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.ci-row{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--glass-1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-e);border-radius:var(--r-md);box-shadow:0 3px 10px var(--sh-w);}
+.ci-lbl{font-size:13px;font-weight:600;color:var(--dusk);}
+.ci-inp{width:68px;padding:7px 12px;text-align:center;background:rgba(255,255,255,0.7);border:1px solid rgba(196,184,164,0.4);border-radius:var(--r-sm);font-family:var(--f-u);font-size:16px;font-weight:700;color:var(--ink);transition:border-color .15s,box-shadow .15s;}
+.ci-inp:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(232,112,90,0.14);}
+.calc-hero{background:linear-gradient(145deg,var(--coral),var(--blush),#D4726A);border-radius:var(--r-xl);padding:24px 22px;box-shadow:0 12px 36px rgba(232,112,90,0.35);margin-bottom:14px;position:relative;overflow:hidden;}
+.calc-hero::after{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;}
+.ch-eye{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:4px;}
+.ch-val{font-family:var(--f-d);font-size:44px;font-weight:400;font-style:italic;color:#fff;letter-spacing:-1.5px;line-height:1;margin-bottom:6px;}
+.ch-meta{font-size:13px;color:rgba(255,255,255,0.78);font-weight:500;}
+.calc-opts{display:flex;flex-direction:column;}
+.co-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(196,184,164,0.18);transition:background .15s;}
+.co-row:last-child{border-bottom:none;}
+.co-row.co-opt{background:rgba(232,112,90,0.04);}
+.co-s,.co-p{width:28px;font-size:14px;font-weight:800;color:var(--ink);text-align:center;}
+.co-lbl{flex:1;font-size:12px;font-weight:600;color:var(--mist);}
+.co-bdg{font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);}
+.cob-opt{background:var(--coral-s);color:var(--coral);}.cob-ok{background:var(--sage-s);color:var(--sage);}.cob-low{background:rgba(196,184,164,.2);color:var(--stone);}
+
+/* ── ACTION ROW ── */
+.act-row{display:flex;gap:8px;margin-bottom:14px;}
+.ar-btn{flex:1;padding:13px;border:none;border-radius:var(--r-md);font-family:var(--f-u);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s cubic-bezier(0.34,1.4,0.64,1);}
+.ar-btn:active{transform:scale(0.96);}
+.ar-p{background:linear-gradient(135deg,var(--coral),var(--blush));color:#fff;box-shadow:0 4px 14px rgba(232,112,90,0.35);}
+.ar-g{background:rgba(196,184,164,.18);color:var(--dusk);border:1px solid rgba(196,184,164,.3);}
+
+/* ══════════════════════════════════════════
+   BOTTOM SHEET + DUAL INPUT
+══════════════════════════════════════════ */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(44,36,32,0.28);backdrop-filter:blur(8px)saturate(160%);-webkit-backdrop-filter:blur(8px)saturate(160%);display:none;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.sheet{width:100%;max-width:420px;background:rgba(252,250,246,0.96);backdrop-filter:blur(50px)saturate(200%);-webkit-backdrop-filter:blur(50px)saturate(200%);border-radius:28px 28px 0 0;border-top:1px solid rgba(255,255,255,0.9);padding:0 22px 44px;box-shadow:0 -12px 48px rgba(44,36,32,.18);animation:su .38s cubic-bezier(0.22,1,0.36,1)both;max-height:92vh;overflow-y:auto;}
+.sheet::-webkit-scrollbar{display:none;}
+@keyframes su{from{transform:translateY(100%);opacity:.8;}to{transform:translateY(0);opacity:1;}}
+.sh-handle{width:36px;height:4px;border-radius:2px;background:rgba(196,184,164,.5);margin:12px auto 22px;}
+.sh-title{font-family:var(--f-d);font-size:24px;font-weight:500;letter-spacing:-.3px;color:var(--ink);margin-bottom:20px;}
+
+/* INPUT MODE TOGGLE */
+.mode-toggle{display:flex;background:rgba(196,184,164,.15);border-radius:var(--r-pill);padding:4px;gap:3px;margin-bottom:22px;}
+.mode-btn{flex:1;padding:10px 8px;border:none;background:none;cursor:pointer;border-radius:var(--r-pill);font-family:var(--f-u);font-size:12px;font-weight:700;color:var(--mist);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .25s cubic-bezier(0.34,1.5,0.64,1);}
+.mode-btn.on{background:#fff;color:var(--ink);box-shadow:0 3px 12px var(--sh-w);}
+.mode-btn.on.ai-mode{background:linear-gradient(135deg,var(--ai),#A07BC8);color:#fff;box-shadow:0 3px 14px rgba(139,107,174,0.4);}
+.mode-icon{font-size:15px;}
+
+/* MANUAL FORM */
+.manual-form{}
+.field{margin-bottom:14px;}
+.f-lbl{font-size:11px;font-weight:700;color:var(--mist);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.f-inp,.f-sel{width:100%;padding:13px 16px;background:rgba(196,184,164,.12);border:1px solid rgba(196,184,164,.35);border-radius:var(--r-md);font-family:var(--f-u);font-size:15px;font-weight:500;color:var(--ink);transition:border-color .15s,box-shadow .15s,background .15s;appearance:none;}
+.f-inp:focus,.f-sel:focus{outline:none;border-color:var(--coral);background:rgba(232,112,90,.04);box-shadow:0 0 0 3px rgba(232,112,90,.12);}
+.c-palette{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
+.c-sw{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:all .2s cubic-bezier(0.34,1.5,0.64,1);}
+.c-sw:active{transform:scale(.88);}
+.c-sw.on{border-color:var(--coral);box-shadow:0 0 0 2px var(--ivory),0 0 0 4px var(--coral),0 3px 10px rgba(0,0,0,.12);transform:scale(1.12);}
+
+/* AI SCAN PANEL */
+.ai-panel{display:none;}
+.ai-panel.visible{display:block;}
+.ai-upload-zone{border:2px dashed rgba(139,107,174,.35);border-radius:var(--r-xl);padding:28px 20px;text-align:center;cursor:pointer;background:var(--ai-s);transition:all .2s;position:relative;overflow:hidden;margin-bottom:16px;}
+.ai-upload-zone:active{transform:scale(.98);background:var(--ai-m);}
+.ai-upload-zone.dragging{border-color:var(--ai);background:var(--ai-m);}
+.auz-icon{font-size:36px;margin-bottom:10px;display:block;}
+.auz-title{font-family:var(--f-d);font-size:20px;font-weight:500;font-style:italic;color:var(--ai);margin-bottom:4px;}
+.auz-sub{font-size:12px;font-weight:600;color:var(--mist);line-height:1.5;}
+.auz-btns{display:flex;gap:8px;justify-content:center;margin-top:14px;}
+.auz-btn{padding:9px 18px;border-radius:var(--r-pill);font-family:var(--f-u);font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s cubic-bezier(0.34,1.4,0.64,1);}
+.auz-btn:active{transform:scale(.95);}
+.auz-cam{background:linear-gradient(135deg,var(--ai),#A07BC8);color:#fff;box-shadow:0 4px 14px rgba(139,107,174,.4);}
+.auz-file{background:rgba(139,107,174,.12);color:var(--ai);}
+
+/* Image preview */
+.img-preview{position:relative;border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px;display:none;}
+.img-preview img{width:100%;max-height:220px;object-fit:cover;display:block;}
+.img-preview-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(44,36,32,.6));padding:12px 14px;}
+.ipo-text{font-size:12px;font-weight:600;color:#fff;}
+.img-clear{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.85);border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+
+/* AI scanning animation */
+.ai-scanning{display:none;text-align:center;padding:24px 16px;}
+.ai-scanning.visible{display:block;}
+.scan-orb{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--ai),#A07BC8);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px;animation:scan-pulse 1.4s ease-in-out infinite;box-shadow:0 0 0 0 rgba(139,107,174,.4);}
+@keyframes scan-pulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(139,107,174,.5);}60%{transform:scale(1.05);box-shadow:0 0 0 16px rgba(139,107,174,0);}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(139,107,174,0);}}
+.scan-txt{font-family:var(--f-d);font-size:20px;font-style:italic;font-weight:400;color:var(--ai);margin-bottom:6px;}
+.scan-sub{font-size:12px;font-weight:600;color:var(--mist);}
+
+/* AI result card */
+.ai-result{display:none;border-radius:var(--r-lg);overflow:hidden;border:1.5px solid rgba(139,107,174,.25);background:rgba(255,255,255,.7);margin-bottom:16px;}
+.ai-result.visible{display:block;animation:rise .4s cubic-bezier(0.22,1,.36,1)both;}
+.ar-head{background:linear-gradient(135deg,var(--ai),#A07BC8);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.ar-head-icon{font-size:18px;}
+.ar-head-txt{font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px;}
+.ar-head-model{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}
+.ar-body{padding:14px 16px;}
+.ar-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(196,184,164,.15);}
+.ar-row:last-child{border-bottom:none;}
+.ar-key{font-size:11px;font-weight:700;color:var(--mist);letter-spacing:.5px;text-transform:uppercase;}
+.ar-val{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;}
+.ar-swatch{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.08);flex-shrink:0;}
+.ar-conf{font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r-pill);background:var(--ai-s);color:var(--ai);}
+.ar-edit-note{font-size:11px;color:var(--mist);font-weight:500;margin-top:10px;font-style:italic;}
+
+/* API key input */
+.api-key-wrap{background:rgba(139,107,174,.07);border:1px solid rgba(139,107,174,.2);border-radius:var(--r-md);padding:14px 16px;margin-bottom:16px;}
+.ak-lbl{font-size:10px;font-weight:700;color:var(--ai);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.ak-inp{width:100%;background:rgba(255,255,255,.8);border:1px solid rgba(139,107,174,.3);border-radius:var(--r-sm);padding:10px 14px;font-family:var(--f-u);font-size:13px;font-weight:500;color:var(--ink);}
+.ak-inp:focus{outline:none;border-color:var(--ai);box-shadow:0 0 0 3px rgba(139,107,174,.12);}
+.ak-note{font-size:10px;color:var(--mist);margin-top:6px;line-height:1.5;}
+
+/* HARMONY GUIDE */
+.harm-guide{margin-top:16px;}
+.hg-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.hg-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(196,184,164,.12);}
+.hg-row:last-child{border-bottom:none;}
+.hg-dots{display:flex;gap:4px;}
+.hg-dot{width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.07);}
+.hg-name{flex:1;font-size:12px;font-weight:600;color:var(--ink);}
+.hg-score{font-size:10px;font-weight:700;padding:3px 9px;border-radius:var(--r-pill);}
+.hgs-ex{background:var(--sage-s);color:var(--sage);}.hgs-gd{background:var(--gold-s);color:var(--gold);}.hgs-ok{background:var(--sky-s);color:var(--sky);}.hgs-av{background:var(--coral-s);color:var(--coral);}
+
+/* ── SHEET BTNS ── */
+.sh-btn{width:100%;padding:15px;border:none;border-radius:var(--r-md);font-family:var(--f-u);font-size:15px;font-weight:800;cursor:pointer;transition:all .2s cubic-bezier(0.34,1.4,0.64,1);margin-top:4px;}
+.sh-btn:active{transform:scale(.97);}
+.sb-p{background:linear-gradient(135deg,var(--coral),var(--blush));color:#fff;box-shadow:0 5px 18px rgba(232,112,90,.4);}
+.sb-g{background:rgba(196,184,164,.15);color:var(--mist);margin-top:8px;}
+.sb-ai{background:linear-gradient(135deg,var(--ai),#A07BC8);color:#fff;box-shadow:0 5px 18px rgba(139,107,174,.4);}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;top:58px;left:0;right:0;display:flex;justify-content:center;z-index:900;pointer-events:none;}
+.toast{background:rgba(44,36,32,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:var(--ivory);font-family:var(--f-u);font-size:13px;font-weight:600;padding:10px 20px;border-radius:var(--r-pill);opacity:0;transform:translateY(-12px)scale(.95);transition:all .35s cubic-bezier(0.34,1.4,0.64,1);max-width:85%;text-align:center;}
+.toast.show{opacity:1;transform:translateY(0)scale(1);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:36px 20px;}
+.ei{font-size:36px;margin-bottom:10px;opacity:.35;}
+.et{font-size:13px;font-weight:600;color:var(--stone);line-height:1.6;}
+
+*{scrollbar-width:none;}::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="al al-1"></div><div class="al al-2"></div>
+  <div class="al al-3"></div><div class="al al-4"></div>
+</div>
+
+<div class="app">
+  <header class="app-hdr">
+    <div class="hdr-l">
+      <div class="time-lbl" id="timeLbl">Good morning</div>
+      <div class="greet">Hello, <em>Harshit</em></div>
+    </div>
+    <div class="hdr-r">
+      <div class="clock-disp" id="clockDisp">—</div>
+      <div class="avatar">H</div>
+    </div>
+  </header>
+  <div class="date-strip">
+    <div class="date-chip" id="dateChip">—</div>
+    <div class="date-dot"></div>
+    <div class="date-chip">Bengaluru</div>
+  </div>
+
+  <div class="scroll">
+
+    <!-- TODAY -->
+    <div class="page active" id="page-today">
+      <div class="sec-lbl">Today's Look</div>
+      <div class="outfit-card">
+        <div class="oi" id="outfitInner">
+          <div class="oh-eye"><div class="oh-pulse"></div><div class="oh-eye-txt">Suggested for you</div></div>
+          <div id="outfitBody"><div class="empty"><div class="ei">👔</div><div class="et">Add clothes in your Closet<br>to receive daily outfit suggestions.</div></div></div>
+        </div>
+      </div>
+      <div class="sec-lbl">Overview</div>
+      <div class="bento">
+        <div class="bc bc-coral"><div class="bc-icon">👔</div><div class="bc-num" id="b-items">0</div><div class="bc-lbl">Wardrobe Items</div></div>
+        <div class="bc bc-sage"><div class="bc-icon">✦</div><div class="bc-num" id="b-combos">0</div><div class="bc-lbl">Combos Free</div></div>
+        <div class="bc bc-gold"><div class="bc-icon">🧺</div><div class="bc-num" id="b-wash">0</div><div class="bc-lbl">In Wash</div></div>
+        <div class="bc bc-sky"><div class="bc-icon">🔥</div><div class="bc-num" id="b-streak">1</div><div class="bc-lbl">Day Streak</div></div>
+      </div>
+      <div class="sec-lbl">This Week</div>
+      <div class="week-row" id="weekRow"></div>
+      <div class="sec-lbl">Laundry</div>
+      <div class="card" style="margin-bottom:14px;position:relative;">
+        <div class="lq">
+          <div class="lq-col lq-cl"><div class="lq-num" id="lq-c">0</div><div class="lq-lbl">Clean</div></div>
+          <div class="lq-col lq-wo"><div class="lq-num" id="lq-w">0</div><div class="lq-lbl">Worn</div></div>
+          <div class="lq-col lq-wa"><div class="lq-num" id="lq-wsh">0</div><div class="lq-lbl">Washing</div></div>
+        </div>
+        <div class="wd-row">
+          <div class="wd-txt" id="wdTxt">Set your wash day</div>
+          <div class="wd-btns">
+            <button class="wd-btn" id="wdb-s" onclick="setWD('Saturday',this)">Sat</button>
+            <button class="wd-btn" id="wdb-u" onclick="setWD('Sunday',this)">Sun</button>
+            <button class="wd-btn" id="wdb-w" onclick="setWD('Wednesday',this)">Wed</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLOSET -->
+    <div class="page" id="page-closet">
+      <div class="sec-title">My <span>Closet</span></div>
+      <div class="seg">
+        <button class="seg-btn on" onclick="showSeg('shirts',this)">Shirts & Tops</button>
+        <button class="seg-btn" onclick="showSeg('pants',this)">Pants</button>
+        <button class="seg-btn" onclick="showSeg('matrix',this)">Matrix</button>
+      </div>
+      <div id="seg-shirts"><div class="g-row" id="shirtGrid"></div></div>
+      <div id="seg-pants" style="display:none;"><div class="g-row" id="pantGrid"></div></div>
+      <div id="seg-matrix" style="display:none;">
+        <div class="card cp" style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;">Combination Matrix</div>
+          <div style="font-size:11px;font-weight:500;color:var(--mist);margin-bottom:6px;">Colour harmony scores shown per combo</div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+            <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--sage-s);color:var(--sage);">Excellent ★★★★★</span>
+            <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--gold-s);color:var(--gold);">Good ★★★★</span>
+            <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--sky-s);color:var(--sky);">OK ★★★</span>
+            <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--coral-s);color:var(--coral);">Avoid ★★</span>
+          </div>
+          <div class="mx-wrap"><table class="mx-table"><thead id="mxHead"></thead><tbody id="mxBody"></tbody></table></div>
+        </div>
+        <div class="card cp" style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:12px;">Recent Combinations</div>
+          <div id="comboHist"></div>
+        </div>
+        <div class="card cp harm-guide">
+          <div class="hg-title">Colour Harmony Guide</div>
+          <div id="harmGuide"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAUNDRY -->
+    <div class="page" id="page-laundry">
+      <div class="sec-title">Laundry <span>Board</span></div>
+      <div class="act-row">
+        <button class="ar-btn ar-p" onclick="markAllClean()">All Washed ✓</button>
+        <button class="ar-btn ar-g" onclick="openSheet('laundrySheet')">+ Add Item</button>
+      </div>
+      <div class="l-board">
+        <div class="l-col lc-cl"><div class="l-hd"><div class="l-hd-t">Clean</div><div class="l-hd-n" id="lc-cl">0</div></div><div class="l-list" id="ll-cl"></div></div>
+        <div class="l-col lc-wo"><div class="l-hd"><div class="l-hd-t">Worn</div><div class="l-hd-n" id="lc-wo">0</div></div><div class="l-list" id="ll-wo"></div></div>
+        <div class="l-col lc-wa"><div class="l-hd"><div class="l-hd-t">Wash</div><div class="l-hd-n" id="lc-wa">0</div></div><div class="l-list" id="ll-wa"></div></div>
+      </div>
+    </div>
+
+    <!-- PLANNER -->
+    <div class="page" id="page-planner">
+      <div class="sec-title">Wardrobe <span>Planner</span></div>
+      <div class="calc-inputs">
+        <div class="ci-row"><div class="ci-lbl">Work days / week</div><input type="number" class="ci-inp" id="ci-d" value="5" min="1" max="7" oninput="runCalc()"></div>
+        <div class="ci-row"><div class="ci-lbl">No-repeat window (weeks)</div><input type="number" class="ci-inp" id="ci-w" value="3" min="1" max="8" oninput="runCalc()"></div>
+        <div class="ci-row"><div class="ci-lbl">Buffer combos</div><input type="number" class="ci-inp" id="ci-b" value="5" min="0" max="20" oninput="runCalc()"></div>
+      </div>
+      <div class="calc-hero" id="calcHero"></div>
+      <div class="sec-lbl">All Options</div>
+      <div class="card calc-opts" id="calcOpts"></div>
+    </div>
+
+    <!-- ROUTINE -->
+    <div class="page" id="page-routine">
+      <div class="sec-title">Daily <span>Routine</span></div>
+      <div class="seg">
+        <button class="seg-btn on" id="rs-m" onclick="showRS('morning',this)">Morning</button>
+        <button class="seg-btn" id="rs-e" onclick="showRS('evening',this)">Evening</button>
+      </div>
+      <div id="rl-morning" class="r-list"></div>
+      <div id="rl-evening" class="r-list" style="display:none;"></div>
+      <button class="ar-btn ar-g" style="width:100%;margin-top:12px;" onclick="openSheet('routineSheet')">+ Add Task</button>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <div class="tab-wrap">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showPage('today')"><span class="tab-icon">⊙</span><span class="tab-lbl">Today</span></button>
+      <button class="tab-btn" onclick="showPage('closet')"><span class="tab-icon">👔</span><span class="tab-lbl">Closet</span></button>
+      <button class="tab-btn" onclick="showPage('laundry')"><span class="tab-icon">🧺</span><span class="tab-lbl">Laundry</span></button>
+      <button class="tab-btn" onclick="showPage('planner')"><span class="tab-icon">✦</span><span class="tab-lbl">Planner</span></button>
+      <button class="tab-btn" onclick="showPage('routine')"><span class="tab-icon">◷</span><span class="tab-lbl">Routine</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GARMENT SHEET (dual input) ══ -->
+<div class="overlay" id="garmentSheet">
+<div class="sheet">
+  <div class="sh-handle"></div>
+  <div class="sh-title" id="gSheetTitle">Add to Closet</div>
+
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn on" id="modeManual" onclick="switchMode('manual')">
+      <span class="mode-icon">✏️</span> Manual
+    </button>
+    <button class="mode-btn ai-mode" id="modeAI" onclick="switchMode('ai')" style="color:var(--ai);">
+      <span class="mode-icon">✦</span> AI Scan
+    </button>
+  </div>
+
+  <!-- MANUAL FORM -->
+  <div class="manual-form" id="manualForm">
+    <div class="field">
+      <label class="f-lbl">Item Name</label>
+      <input type="text" class="f-inp" id="gi-name" placeholder="e.g. Navy Oxford Shirt">
+    </div>
+    <div class="field">
+      <label class="f-lbl">Type</label>
+      <select class="f-sel" id="gi-type">
+        <option value="shirt">Shirt / Top</option>
+        <option value="pant">Pant / Trouser</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="f-lbl">Colour</label>
+      <div class="c-palette">
+        <div class="c-sw on" style="background:#1A3A5C" data-c="#1A3A5C" data-n="Navy" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#E8E8E8;border:1.5px solid #ddd" data-c="#E8E8E8" data-n="White" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#3D3D3D" data-c="#3D3D3D" data-n="Charcoal" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#5C1A1A" data-c="#5C1A1A" data-n="Burgundy" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#3D5A2E" data-c="#3D5A2E" data-n="Olive" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#B8A882" data-c="#B8A882" data-n="Stone" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#B8D4E8" data-c="#B8D4E8" data-n="Sky Blue" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#4A4A4A" data-c="#4A4A4A" data-n="Graphite" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#1A1A1A" data-c="#1A1A1A" data-n="Black" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#C8A46A" data-c="#C8A46A" data-n="Tan" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#E8E0A0" data-c="#E8E0A0" data-n="Cream" onclick="pickSw(this)"></div>
+        <div class="c-sw" style="background:#7AAEC8" data-c="#7AAEC8" data-n="Steel Blue" onclick="pickSw(this)"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="f-lbl">Emoji</label>
+      <input type="text" class="f-inp" id="gi-emoji" placeholder="👔" style="max-width:80px;text-align:center;font-size:22px;">
+    </div>
+    <!-- Harmony preview for manual -->
+    <div id="harmPreview" style="display:none;margin-bottom:14px;"></div>
+    <button class="sh-btn sb-p" onclick="saveGarment()">Add to Closet</button>
+  </div>
+
+  <!-- AI SCAN PANEL -->
+  <div class="ai-panel" id="aiPanel">
+
+    <!-- API Key -->
+    <div class="api-key-wrap">
+      <div class="ak-lbl">🔑 Anthropic API Key</div>
+      <input type="password" class="ak-inp" id="apiKeyInput" placeholder="sk-ant-..." value="">
+      <div class="ak-note">Used only for clothing recognition. Stored locally, never sent anywhere else. Get yours at console.anthropic.com</div>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="ai-upload-zone" id="uploadZone">
+      <span class="auz-icon">✦</span>
+      <div class="auz-title">Scan Your Clothing</div>
+      <div class="auz-sub">Take a photo or upload an image.<br>AI will identify type, colour & style.</div>
+      <div class="auz-btns">
+        <button class="auz-btn auz-cam" onclick="triggerCamera()">📷 Camera</button>
+        <button class="auz-btn auz-file" onclick="triggerFile()">🖼 Gallery</button>
+      </div>
+    </div>
+
+    <!-- Hidden inputs -->
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleImageSelect(this)">
+    <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(this)">
+
+    <!-- Image Preview -->
+    <div class="img-preview" id="imgPreview">
+      <img id="previewImg" src="" alt="Clothing preview">
+      <div class="img-preview-overlay"><div class="ipo-text" id="ipoText">Ready to scan</div></div>
+      <button class="img-clear" onclick="clearImage()">✕</button>
+    </div>
+
+    <!-- Scanning Animation -->
+    <div class="ai-scanning" id="aiScanning">
+      <div class="scan-orb">✦</div>
+      <div class="scan-txt">Analysing your clothing…</div>
+      <div class="scan-sub">Identifying type, colour & style</div>
+    </div>
+
+    <!-- AI Result -->
+    <div class="ai-result" id="aiResult">
+      <div class="ar-head">
+        <div class="ar-head-icon">✦</div>
+        <div><div class="ar-head-txt">AI Detection Complete</div><div class="ar-head-model">Claude Haiku · Vision Analysis</div></div>
+      </div>
+      <div class="ar-body" id="aiResultBody"></div>
+    </div>
+
+    <!-- Scan button -->
+    <button class="sh-btn sb-ai" id="scanBtn" onclick="runAIScan()" style="display:none;">✦ Analyse with AI</button>
+
+    <!-- After scan: editable fields pre-filled -->
+    <div id="aiEditForm" style="display:none;margin-top:4px;">
+      <div style="font-size:12px;font-weight:600;color:var(--mist);margin-bottom:12px;font-style:italic;">Review and confirm the details below:</div>
+      <div class="field">
+        <label class="f-lbl">Name</label>
+        <input type="text" class="f-inp" id="ai-name">
+      </div>
+      <div class="field">
+        <label class="f-lbl">Type</label>
+        <select class="f-sel" id="ai-type"><option value="shirt">Shirt / Top</option><option value="pant">Pant / Trouser</option></select>
+      </div>
+      <div class="field">
+        <label class="f-lbl">Detected Colour</label>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div id="aiColorDot" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(0,0,0,.08);flex-shrink:0;"></div>
+          <input type="text" class="f-inp" id="ai-colorname" placeholder="Colour name" style="flex:1;">
+        </div>
+      </div>
+      <div class="field">
+        <label class="f-lbl">Emoji</label>
+        <input type="text" class="f-inp" id="ai-emoji" style="max-width:80px;text-align:center;font-size:22px;">
+      </div>
+      <button class="sh-btn sb-p" onclick="saveAIGarment()">Add to Closet</button>
+    </div>
+
+  </div><!-- /ai-panel -->
+
+  <button class="sh-btn sb-g" onclick="closeSheet('garmentSheet')">Cancel</button>
+</div>
+</div>
+
+<!-- Laundry Sheet -->
+<div class="overlay" id="laundrySheet">
+<div class="sheet">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Add Laundry Item</div>
+  <div class="field"><label class="f-lbl">Item Name</label><input type="text" class="f-inp" id="li-name" placeholder="e.g. Navy Chinos"></div>
+  <div class="field"><label class="f-lbl">Type</label><select class="f-sel" id="li-type"><option>Shirt</option><option>Pant</option><option>T-Shirt</option><option>Formal Shirt</option><option>Chinos</option><option>Jeans</option></select></div>
+  <div class="field"><label class="f-lbl">Status</label><select class="f-sel" id="li-status"><option value="clean">Clean</option><option value="worn">Worn</option><option value="wash">In Wash</option></select></div>
+  <button class="sh-btn sb-p" onclick="saveLaundry()">Add Item</button>
+  <button class="sh-btn sb-g" onclick="closeSheet('laundrySheet')">Cancel</button>
+</div>
+</div>
+
+<!-- Routine Sheet -->
+<div class="overlay" id="routineSheet">
+<div class="sheet">
+  <div class="sh-handle"></div>
+  <div class="sh-title">New Task</div>
+  <div class="field"><label class="f-lbl">Task Name</label><input type="text" class="f-inp" id="ri-name" placeholder="e.g. Iron tomorrow's outfit"></div>
+  <div class="field"><label class="f-lbl">Time</label><input type="time" class="f-inp" id="ri-time" value="07:00"></div>
+  <div class="field"><label class="f-lbl">Period</label><select class="f-sel" id="ri-period"><option value="morning">Morning</option><option value="evening">Evening</option></select></div>
+  <button class="sh-btn sb-p" onclick="saveRoutine()">Add Task</button>
+  <button class="sh-btn sb-g" onclick="closeSheet('routineSheet')">Cancel</button>
+</div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<script>
+// ══════════════════════════════════════════
+// COLOUR INTELLIGENCE ENGINE
+// ══════════════════════════════════════════
+
+// Convert hex to HSL
+function hexToHSL(hex){
+  let r=parseInt(hex.slice(1,3),16)/255;
+  let g=parseInt(hex.slice(3,5),16)/255;
+  let b=parseInt(hex.slice(5,7),16)/255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){h=s=0;}
+  else{
+    const d=max-min;
+    s=l>0.5?d/(2-max-min):d/(max+min);
+    switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}
+    h/=6;
+  }
+  return{h:h*360,s:s*100,l:l*100};
+}
+
+// Colour temperature: warm vs cool
+function colorTemp(hsl){
+  const h=hsl.h;
+  if((h>=0&&h<=60)||(h>=300&&h<=360)) return 'warm';
+  if(h>=180&&h<=270) return 'cool';
+  return 'neutral';
+}
+
+// Core harmony scoring function — returns 0-100
+function harmonyScore(hexA, hexB){
+  const a=hexToHSL(hexA), b=hexToHSL(hexB);
+
+  // 1. Lightness contrast (clothes need contrast between top & bottom)
+  const lContrast=Math.abs(a.l-b.l);
+
+  // 2. Hue relationship
+  const hueDiff=Math.abs(a.h-b.h);
+  const hueMin=Math.min(hueDiff,360-hueDiff);
+
+  // 3. Temperature harmony
+  const tempA=colorTemp(a), tempB=colorTemp(b);
+  const sameTemp=tempA===tempB;
+
+  // 4. Saturation balance
+  const satDiff=Math.abs(a.s-b.s);
+
+  // 5. Neutrals check (low saturation = neutral = pairs with anything)
+  const aIsNeutral=a.s<18;
+  const bIsNeutral=b.s<18;
+
+  let score=50;
+
+  // Neutral + anything = good base
+  if(aIsNeutral||bIsNeutral) score+=20;
+
+  // Both neutral — mono but safe
+  if(aIsNeutral&&bIsNeutral) score=55;
+
+  // Contrast is king for shirt/pant pairing
+  if(lContrast>35) score+=20;
+  else if(lContrast>20) score+=12;
+  else if(lContrast<10) score-=20; // too similar
+
+  // Complementary hues (hue diff ~180) — very stylish
+  if(hueMin>150&&hueMin<210) score+=15;
+  // Analogous (close hues) — harmonious but can be boring
+  else if(hueMin<30) score+=5;
+  // Split complementary (~120, ~240) — sophisticated
+  else if(hueMin>100&&hueMin<140) score+=10;
+  // Near-complementary (~60) — risky
+  else if(hueMin>50&&hueMin<70) score-=8;
+
+  // Same temperature = cohesive
+  if(sameTemp) score+=8;
+
+  // Avoid both highly saturated (clashing)
+  if(a.s>55&&b.s>55) score-=15;
+
+  // One saturated + one neutral = classic
+  if((a.s>40&&bIsNeutral)||(b.s>40&&aIsNeutral)) score+=12;
+
+  // Tone-on-tone same hue (same colour family but both saturated)
+  if(hueMin<20&&a.s>25&&b.s>25&&lContrast<15) score-=25;
+
+  return Math.max(5,Math.min(100,Math.round(score)));
+}
+
+function scoreLabel(s){
+  if(s>=80) return{label:'Excellent',cls:'hb-excellent',mini:'★★★★★',dot:'gh-ex'};
+  if(s>=65) return{label:'Good',cls:'hb-good',mini:'★★★★',dot:'gh-gd'};
+  if(s>=45) return{label:'Works',cls:'hb-ok',mini:'★★★',dot:'gh-ok'};
+  return{label:'Avoid',cls:'hb-avoid',mini:'★★',dot:''};
+}
+
+// Build harmony guide for current wardrobe
+function buildHarmonyGuide(){
+  const el=document.getElementById('harmGuide');
+  if(!S.shirts.length||!S.pants.length){el.innerHTML='<div class="et" style="padding:12px 0;">Add shirts and pants to see harmony pairs.</div>';return;}
+  const pairs=[];
+  S.shirts.forEach(s=>S.pants.forEach(p=>{
+    const sc=harmonyScore(s.color,p.color);
+    pairs.push({s,p,sc});
+  }));
+  pairs.sort((a,b)=>b.sc-a.sc);
+  const top=pairs.slice(0,6);
+  el.innerHTML=top.map(({s,p,sc})=>{
+    const {label,mini}=scoreLabel(sc);
+    return `<div class="hg-row">
+      <div class="hg-dots"><div class="hg-dot" style="background:${s.color}"></div><div class="hg-dot" style="background:${p.color}"></div></div>
+      <div class="hg-name">${s.name} + ${p.name}</div>
+      <span class="hg-score ${sc>=80?'hgs-ex':sc>=65?'hgs-gd':sc>=45?'hgs-ok':'hgs-av'}">${mini} ${sc}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let S=JSON.parse(localStorage.getItem('lifeos-v4')||'{}');
+['shirts','pants','combos','laundry','routines'].forEach(k=>{if(!S[k])S[k]=[];});
+if(!S.washDay)S.washDay=null;
+if(!S.streak)S.streak=1;
+
+if(!S.shirts.length){
+  S.shirts=[
+    {id:'s1',name:'White Oxford',emoji:'👔',color:'#E8E8E8',cn:'White',status:'clean'},
+    {id:'s2',name:'Sky Blue Formal',emoji:'👔',color:'#B8D4E8',cn:'Sky Blue',status:'clean'},
+    {id:'s3',name:'Navy Micro-Check',emoji:'👔',color:'#1A2F4A',cn:'Navy',status:'worn'},
+    {id:'s4',name:'Olive Linen',emoji:'👔',color:'#3D5A2E',cn:'Olive',status:'clean'},
+    {id:'s5',name:'Graphite Grey',emoji:'👔',color:'#4A4A4A',cn:'Graphite',status:'clean'},
+    {id:'s6',name:'Burgundy Slim',emoji:'👔',color:'#5C1A1A',cn:'Burgundy',status:'clean'},
+  ];
+  S.pants=[
+    {id:'p1',name:'Black Trousers',emoji:'👖',color:'#1A1A1A',cn:'Black',status:'clean'},
+    {id:'p2',name:'Navy Chinos',emoji:'👖',color:'#1C3052',cn:'Navy',status:'clean'},
+    {id:'p3',name:'Charcoal Trousers',emoji:'👖',color:'#3A3A3A',cn:'Charcoal',status:'worn'},
+    {id:'p4',name:'Stone Chinos',emoji:'👖',color:'#B8A882',cn:'Stone',status:'clean'},
+  ];
+  S.laundry=[...S.shirts.map(s=>({id:'l'+s.id,name:s.name,type:'Shirt',icon:s.emoji,status:s.status})),...S.pants.map(p=>({id:'l'+p.id,name:p.name,type:'Pant',icon:p.emoji,status:p.status}))];
+  S.routines=[
+    {id:'r1',name:'Check today\'s outfit',time:'06:45',period:'morning',cat:'wardrobe'},
+    {id:'r2',name:'Morning stretch',time:'06:30',period:'morning',cat:'routine'},
+    {id:'r3',name:'Pack bag & check calendar',time:'07:15',period:'morning',cat:'work'},
+    {id:'r4',name:'Leave for office',time:'08:00',period:'morning',cat:'work'},
+    {id:'r5',name:'Mark worn clothes',time:'20:00',period:'evening',cat:'wardrobe'},
+    {id:'r6',name:'Iron tomorrow\'s outfit',time:'21:00',period:'evening',cat:'wardrobe'},
+    {id:'r7',name:'Wind down',time:'22:00',period:'evening',cat:'routine'},
+  ];
+  const now=new Date();
+  for(let i=1;i<=10;i++){const d=new Date(now);d.setDate(d.getDate()-i);if(d.getDay()>0&&d.getDay()<6)S.combos.push({date:d.toISOString().split('T')[0],shirtId:S.shirts[i%6].id,pantId:S.pants[i%4].id});}
+  save();
+}
+function save(){localStorage.setItem('lifeos-v4',JSON.stringify(S));}
+
+// ══════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════
+function tick(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes();
+  document.getElementById('clockDisp').textContent=`${h}:${String(m).padStart(2,'0')}`;
+  document.getElementById('timeLbl').textContent=h<5?'Good night':h<12?'Good morning':h<17?'Good afternoon':h<20?'Good evening':'Good night';
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dateChip').textContent=`${days[n.getDay()]}, ${months[n.getMonth()]} ${n.getDate()}`;
+}
+tick();setInterval(tick,15000);
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+const PAGES=['today','closet','laundry','planner','routine'];
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.tab-btn')[PAGES.indexOf(name)].classList.add('active');
+  if(name==='today')renderToday();
+  if(name==='closet')renderCloset();
+  if(name==='laundry')renderLaundry();
+  if(name==='planner')runCalc();
+  if(name==='routine')renderRoutine();
+}
+
+// ══════════════════════════════════════════
+// TODAY
+// ══════════════════════════════════════════
+let suggI=0;
+function renderToday(){
+  const total=S.shirts.length*S.pants.length;
+  const used=new Set(recentCombos(15).map(c=>c.shirtId+'|'+c.pantId));
+  document.getElementById('b-items').textContent=S.shirts.length+S.pants.length;
+  document.getElementById('b-combos').textContent=Math.max(0,total-used.size);
+  document.getElementById('b-wash').textContent=S.laundry.filter(i=>i.status==='wash').length;
+  document.getElementById('b-streak').textContent=S.streak;
+  document.getElementById('lq-c').textContent=S.laundry.filter(i=>i.status==='clean').length;
+  document.getElementById('lq-w').textContent=S.laundry.filter(i=>i.status==='worn').length;
+  document.getElementById('lq-wsh').textContent=S.laundry.filter(i=>i.status==='wash').length;
+  if(S.washDay){document.getElementById('wdTxt').textContent='🧺 Wash day: '+S.washDay;['s','u','w'].forEach((d,i)=>{const days=['Saturday','Sunday','Wednesday'];document.getElementById('wdb-'+d).classList.toggle('on',S.washDay===days[i]);});}
+  renderOutfit();renderWeek();
+}
+
+function renderOutfit(){
+  const el=document.getElementById('outfitBody');
+  if(!S.shirts.length||!S.pants.length){el.innerHTML=`<div class="empty"><div class="ei">👔</div><div class="et">Add clothes in your Closet<br>to get daily suggestions.</div></div>`;return;}
+  const today=new Date().toISOString().split('T')[0];
+  const logged=S.combos.find(c=>c.date===today);
+  let shirt,pant,isLogged=false;
+  if(logged){shirt=S.shirts.find(x=>x.id===logged.shirtId);pant=S.pants.find(x=>x.id===logged.pantId);isLogged=true;}
+  else{
+    const usedSet=new Set(recentCombos(15).map(c=>c.shirtId+'|'+c.pantId));
+    // Sort available by harmony score — suggest best combo first
+    const avail=[];
+    S.shirts.filter(s=>s.status!=='wash').forEach(s=>{S.pants.filter(p=>p.status!=='wash').forEach(p=>{if(!usedSet.has(s.id+'|'+p.id))avail.push({shirt:s,pant:p,score:harmonyScore(s.color,p.color)});});});
+    avail.sort((a,b)=>b.score-a.score);
+    if(!avail.length){el.innerHTML=`<div class="empty"><div class="ei">🔄</div><div class="et">All combos used this cycle.<br>Great job — time to refresh!</div></div>`;return;}
+    const pick=avail[suggI%avail.length];
+    shirt=pick.shirt;pant=pick.pant;
+  }
+  if(!shirt||!pant)return;
+  const sc=harmonyScore(shirt.color,pant.color);
+  const{label,cls}=scoreLabel(sc);
+  el.innerHTML=`
+    <div class="oh-pair">
+      <div class="oh-g"><div class="oh-sw" style="background:${shirt.color}18;"><div class="oh-sw-inner" style="background:${shirt.color}30;">${shirt.emoji}</div></div><div class="oh-gfoot"><div class="oh-gname">${shirt.name}</div><div class="oh-gcolor">${shirt.cn}</div></div></div>
+      <div class="oh-div">+</div>
+      <div class="oh-g"><div class="oh-sw" style="background:${pant.color}18;"><div class="oh-sw-inner" style="background:${pant.color}30;">${pant.emoji}</div></div><div class="oh-gfoot"><div class="oh-gname">${pant.name}</div><div class="oh-gcolor">${pant.cn}</div></div></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <span class="harmony-badge ${cls}">
+        <span>${label}</span>
+        <span style="opacity:.7;font-size:10px;">Harmony Score ${sc}/100</span>
+      </span>
+    </div>
+    <div class="oh-tags">
+      ${isLogged?'<span class="oh-tag t-sage">✓ Logged Today</span>':'<span class="oh-tag t-coral">Best Match Today</span>'}
+      <span class="oh-tag t-gold">Office Ready</span>
+      <span class="oh-tag t-sky">3-Week Safe</span>
+    </div>
+    ${!isLogged?`<div class="oh-actions"><button class="btn-p" onclick="wearToday('${shirt.id}','${pant.id}')">Wear This Today</button><button class="btn-s" onclick="nextSugg()">Next →</button></div>`:''}`;
+}
+
+function wearToday(sid,pid){
+  const today=new Date().toISOString().split('T')[0];
+  S.combos=S.combos.filter(c=>c.date!==today);
+  S.combos.push({date:today,shirtId:sid,pantId:pid});
+  const s=S.shirts.find(x=>x.id===sid);if(s)s.status='worn';
+  S.laundry.forEach(i=>{if(i.id==='l'+sid||i.id==='l'+pid)i.status='worn';});
+  save();renderToday();toast('Outfit locked in ✦');
+}
+function nextSugg(){suggI++;renderOutfit();}
+
+function renderWeek(){
+  const wrap=document.getElementById('weekRow');
+  const n=new Date(),today=n.toISOString().split('T')[0];
+  const mon=new Date(n);mon.setDate(n.getDate()-n.getDay()+1);
+  const dnames=['MON','TUE','WED','THU','FRI'];
+  let html='';
+  for(let i=0;i<5;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const ds=d.toISOString().split('T')[0];
+    const c=S.combos.find(x=>x.date===ds);
+    const s=c?S.shirts.find(x=>x.id===c.shirtId):null;
+    const p=c?S.pants.find(x=>x.id===c.pantId):null;
+    const isT=ds===today,isF=d>n;
+    html+=`<div class="day-tile${isT?' is-today':''}${isF?' is-future':''}"><div class="dt-name">${dnames[i]}</div><span class="dt-emoji">${s&&p?s.emoji+p.emoji:'—'}</span><div class="dt-num">${d.getDate()}</div></div>`;
+  }
+  wrap.innerHTML=html;
+}
+
+function setWD(day,btn){S.washDay=day;save();document.getElementById('wdTxt').textContent='🧺 Wash day: '+day;document.querySelectorAll('.wd-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');toast('Wash day: '+day);}
+function recentCombos(days){const cut=new Date();cut.setDate(cut.getDate()-days);return S.combos.filter(c=>new Date(c.date)>=cut);}
+
+// ══════════════════════════════════════════
+// CLOSET
+// ══════════════════════════════════════════
+function renderCloset(){buildGrid('shirt');buildGrid('pant');buildMatrix();buildComboHist();buildHarmonyGuide();}
+
+function bestHarmonyForGarment(item,type){
+  const others=type==='shirt'?S.pants:S.shirts;
+  if(!others.length)return null;
+  const scores=others.map(o=>harmonyScore(item.color,o.color));
+  return Math.max(...scores);
+}
+
+function buildGrid(type){
+  const items=type==='shirt'?S.shirts:S.pants;
+  const id=type==='shirt'?'shirtGrid':'pantGrid';
+  const grid=document.getElementById(id);
+  let html='';
+  items.forEach(item=>{
+    const bs=bestHarmonyForGarment(item,type);
+    const{dot}=bs?scoreLabel(bs):{dot:''};
+    html+=`<div class="g-tile${item.status==='wash'?' is-wash':''}">
+      <div class="g-sw" style="background:${item.color}14;">
+        <div class="g-ew" style="background:${item.color}28;">${item.emoji}</div>
+        ${item.status==='wash'?'<div class="wash-bdg">Washing</div>':''}
+        ${bs&&dot?`<div class="g-harm ${dot}">${bs}</div>`:''}
+      </div>
+      <div class="g-foot"><div class="g-tname">${item.name}</div><div class="g-tsub">${item.cn} · ${item.status}</div></div>
+    </div>`;
+  });
+  html+=`<div class="add-tile" onclick="openAddGarment('${type}')"><span class="add-tile-icon">＋</span><span>Add ${type==='shirt'?'Shirt':'Pant'}</span></div>`;
+  grid.innerHTML=html;
+}
+
+function buildMatrix(){
+  const head=document.getElementById('mxHead'),body=document.getElementById('mxBody');
+  if(!S.shirts.length||!S.pants.length){head.innerHTML='';body.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;font-size:12px;color:var(--stone);">Add shirts and pants first</td></tr>';return;}
+  const used=new Set(recentCombos(15).map(c=>c.shirtId+'|'+c.pantId));
+  const todaySet=new Set(recentCombos(0).map(c=>c.shirtId+'|'+c.pantId));
+  head.innerHTML='<tr><th class="mx-hc"></th>'+S.pants.map(p=>`<th class="mx-hc">${p.cn}</th>`).join('')+'</tr>';
+  body.innerHTML=S.shirts.map(s=>`<tr>
+    <td class="mx-rl">${s.emoji} ${s.name}</td>
+    ${S.pants.map(p=>{
+      const k=s.id+'|'+p.id;
+      const cls=todaySet.has(k)?'mx-today':used.has(k)?'mx-used':'mx-av';
+      const sc=harmonyScore(s.color,p.color);
+      const{mini}=scoreLabel(sc);
+      const badge=cls==='mx-today'?'✓ Today':cls==='mx-used'?'Used':mini;
+      const barColor=sc>=80?'var(--sage)':sc>=65?'var(--gold)':sc>=45?'var(--sky)':'var(--coral)';
+      return `<td class="mx-cell ${cls}"><div class="mx-in" onclick="${cls==='mx-av'?`wearToday('${s.id}','${p.id}')`:''}" title="${cls==='mx-av'?`Harmony: ${sc}/100 — click to wear today`:''}">
+        <div class="mx-dots"><div class="mx-dot" style="background:${s.color}"></div><div class="mx-dot" style="background:${p.color}"></div></div>
+        <div class="mx-sc">${badge}</div>
+        <div class="mx-hbar"><div class="mx-hfill" style="width:${sc}%;background:${barColor};"></div></div>
+      </div></td>`;
+    }).join('')}
+  </tr>`).join('');
+}
+
+function buildComboHist(){
+  const el=document.getElementById('comboHist');
+  const r=S.combos.slice(-8).reverse();
+  if(!r.length){el.innerHTML='<div class="empty" style="padding:16px"><div class="et">No combos logged yet</div></div>';return;}
+  el.innerHTML=r.map(c=>{
+    const s=S.shirts.find(x=>x.id===c.shirtId),p=S.pants.find(x=>x.id===c.pantId);
+    if(!s||!p)return '';
+    const sc=harmonyScore(s.color,p.color);
+    const{mini,cls}=scoreLabel(sc);
+    return `<div class="chi">
+      <div class="chi-date">${c.date}</div>
+      <div class="chi-em">${s.emoji}${p.emoji}</div>
+      <div class="chi-names"><div class="chi-n1">${s.name}</div><div class="chi-n2">+ ${p.name}</div></div>
+      <span class="chi-harm ${cls}" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;">${mini}</span>
+    </div>`;
+  }).join('');
+}
+
+function showSeg(seg,btn){
+  ['shirts','pants','matrix'].forEach(s=>{document.getElementById('seg-'+s).style.display=s===seg?'block':'none';});
+  document.querySelectorAll('#page-closet .seg-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ══════════════════════════════════════════
+// LAUNDRY
+// ══════════════════════════════════════════
+function renderLaundry(){
+  const g={clean:[],worn:[],wash:[]};
+  S.laundry.forEach(i=>{if(g[i.status])g[i.status].push(i);});
+  ['clean','worn','wash'].forEach(st=>{
+    const short=st==='clean'?'cl':st==='worn'?'wo':'wa';
+    document.getElementById('lc-'+short).textContent=g[st].length;
+    const el=document.getElementById('ll-'+short);
+    if(!g[st].length){el.innerHTML=`<div class="l-empty">Empty</div>`;return;}
+    el.innerHTML=g[st].map(item=>`<div class="l-item">
+      <span class="li-icon">${item.icon||'👕'}</span>
+      <span class="li-name">${item.name}</span>
+      <div class="li-acts">
+        ${st!=='clean'?`<button class="la la-sg" onclick="moveL('${item.id}','clean')" title="Clean">✓</button>`:''}
+        ${st==='clean'?`<button class="la la-gd" onclick="moveL('${item.id}','worn')" title="Worn">◐</button>`:''}
+        ${st!=='wash'?`<button class="la la-co" onclick="moveL('${item.id}','wash')" title="Wash">⟳</button>`:''}
+      </div></div>`).join('');
+  });
+}
+function moveL(id,status){
+  const item=S.laundry.find(i=>i.id===id);if(!item)return;
+  item.status=status;
+  const gid=id.replace(/^l/,'');
+  const s=S.shirts.find(x=>x.id===gid),p=S.pants.find(x=>x.id===gid);
+  if(s)s.status=status;if(p)p.status=status;
+  save();renderLaundry();toast(`${item.name} → ${status}`);
+}
+function markAllClean(){
+  S.laundry.forEach(i=>{if(i.status==='wash')i.status='clean';});
+  S.shirts.forEach(s=>{if(s.status==='wash')s.status='clean';});
+  S.pants.forEach(p=>{if(p.status==='wash')p.status='clean';});
+  save();renderLaundry();toast('All clean ✦');
+}
+
+// ══════════════════════════════════════════
+// CALCULATOR
+// ══════════════════════════════════════════
+function runCalc(){
+  const d=+(document.getElementById('ci-d').value)||5;
+  const w=+(document.getElementById('ci-w').value)||3;
+  const b=+(document.getElementById('ci-b').value)||5;
+  const need=d*w+b;
+  let bS=1,bP=1;
+  for(let s=1;s<=20;s++)for(let p=1;p<=15;p++)if(s*p>=need&&((s+p)<(bS+bP)||((s+p)===(bS+bP)&&Math.abs(s-p)<Math.abs(bS-bP)))){bS=s;bP=p;}
+  const total=bS*bP,surplus=total-need;
+  document.getElementById('calcHero').innerHTML=`<div class="ch-eye">Recommended</div><div class="ch-val">${bS} Shirts + ${bP} Pants</div><div class="ch-meta">${total} total combos · ${surplus} surplus · ${need} minimum needed</div>`;
+  const opts=[[4,3],[4,4],[5,3],[5,4],[6,4],[6,5],[7,4],[5,5]];
+  document.getElementById('calcOpts').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:12px 16px 6px;gap:4px;"><div style="font-size:10px;font-weight:700;color:var(--mist);">SHIRTS</div><div style="font-size:10px;font-weight:700;color:var(--mist);">PANTS</div><div style="font-size:10px;font-weight:700;color:var(--mist);">COMBOS</div><div style="font-size:10px;font-weight:700;color:var(--mist);">STATUS</div></div>`+
+  opts.map(([s,p])=>{const c=s*p,ok=c>=need,isOpt=s===bS&&p===bP;return`<div class="co-row${isOpt?' co-opt':''}"><div class="co-s">${s}</div><div class="co-p">${p}</div><div class="co-lbl">${c} combos</div><span class="co-bdg ${isOpt?'cob-opt':ok?'cob-ok':'cob-low'}">${isOpt?'Optimal':ok?'Good':'Short'}</span></div>`;}).join('');
+}
+
+// ══════════════════════════════════════════
+// ROUTINE
+// ══════════════════════════════════════════
+function renderRoutine(){
+  const now=new Date().toTimeString().slice(0,5);
+  ['morning','evening'].forEach(period=>{
+    const items=S.routines.filter(r=>r.period===period).sort((a,b)=>a.time.localeCompare(b.time));
+    const el=document.getElementById('rl-'+period);
+    if(!items.length){el.innerHTML=`<div class="empty"><div class="ei">⏰</div><div class="et">No ${period} tasks yet</div></div>`;return;}
+    el.innerHTML=items.map(r=>{
+      const past=r.time<now,near=Math.abs(parseInt(r.time.replace(':',''))-parseInt(now.replace(':','')))<45;
+      return`<div class="r-item${near?' r-act':past?' r-dn':''}"><div class="r-time">${r.time}</div><div class="r-name">${r.name}</div><span class="r-cat ${r.cat==='wardrobe'?'rc-w':r.cat==='work'?'rc-wk':'rc-r'}">${r.cat}</span><button class="r-del" onclick="delR('${r.id}')">×</button></div>`;
+    }).join('');
+  });
+}
+function delR(id){S.routines=S.routines.filter(r=>r.id!==id);save();renderRoutine();}
+function showRS(seg,btn){document.getElementById('rl-morning').style.display=seg==='morning'?'flex':'none';document.getElementById('rl-evening').style.display=seg==='evening'?'flex':'none';document.querySelectorAll('#page-routine .seg-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+
+// ══════════════════════════════════════════
+// SHEETS
+// ══════════════════════════════════════════
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+let pickedColor={v:'#1A3A5C',n:'Navy'};
+let currentType='shirt';
+
+function openAddGarment(type){
+  currentType=type;
+  document.getElementById('gi-type').value=type;
+  document.getElementById('gi-name').value='';
+  document.getElementById('gi-emoji').value=type==='shirt'?'👔':'👖';
+  document.getElementById('gSheetTitle').textContent='Add to Closet';
+  switchMode('manual');
+  resetAIPanel();
+  openSheet('garmentSheet');
+}
+
+function pickSw(el){
+  document.querySelectorAll('.c-sw').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  pickedColor={v:el.dataset.c,n:el.dataset.n};
+  updateHarmPreview();
+}
+
+function updateHarmPreview(){
+  const type=document.getElementById('gi-type').value;
+  const others=type==='shirt'?S.pants:S.shirts;
+  const el=document.getElementById('harmPreview');
+  if(!others.length){el.style.display='none';return;}
+  const scores=others.map(o=>({item:o,sc:harmonyScore(pickedColor.v,o.color)}));
+  scores.sort((a,b)=>b.sc-a.sc);
+  const best=scores[0];
+  const{label,cls}=scoreLabel(best.sc);
+  el.style.display='block';
+  el.innerHTML=`<div style="background:var(--glass-1);border:1px solid var(--glass-e);border-radius:var(--r-md);padding:12px 14px;">
+    <div style="font-size:10px;font-weight:700;color:var(--mist);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">Colour Intelligence Preview</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:14px;height:14px;border-radius:50%;background:${pickedColor.v};border:1px solid rgba(0,0,0,.1);flex-shrink:0;"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--ink);flex:1;">Best pair: ${best.item.name}</div>
+      <span class="harmony-badge ${cls}" style="padding:3px 10px;font-size:10px;">${label} · ${best.sc}</span>
+    </div>
+  </div>`;
+}
+
+document.getElementById('gi-type').addEventListener('change',updateHarmPreview);
+document.getElementById('gi-name').addEventListener('input',updateHarmPreview);
+
+function saveGarment(){
+  const name=document.getElementById('gi-name').value.trim();
+  const type=document.getElementById('gi-type').value;
+  const emoji=document.getElementById('gi-emoji').value.trim()||(type==='shirt'?'👔':'👖');
+  if(!name){toast('Please enter a name');return;}
+  const item={id:type[0]+Date.now(),name,emoji,color:pickedColor.v,cn:pickedColor.n,status:'clean'};
+  if(type==='shirt')S.shirts.push(item);else S.pants.push(item);
+  S.laundry.push({id:'l'+item.id,name,type:type==='shirt'?'Shirt':'Pant',icon:emoji,status:'clean'});
+  save();closeSheet('garmentSheet');renderCloset();toast(name+' added to Closet');
+}
+
+// ══════════════════════════════════════════
+// MODE TOGGLE
+// ══════════════════════════════════════════
+function switchMode(mode){
+  const isAI=mode==='ai';
+  document.getElementById('modeManual').classList.toggle('on',!isAI);
+  document.getElementById('modeAI').classList.toggle('on',isAI);
+  document.getElementById('manualForm').style.display=isAI?'none':'block';
+  document.getElementById('aiPanel').classList.toggle('visible',isAI);
+  if(isAI) document.getElementById('aiPanel').style.display='block';
+  else document.getElementById('aiPanel').style.display='none';
+}
+
+// ══════════════════════════════════════════
+// AI VISION SCAN
+// ══════════════════════════════════════════
+let capturedImageB64=null;
+let aiDetectedColor='#888888';
+
+function triggerCamera(){document.getElementById('cameraInput').click();}
+function triggerFile(){document.getElementById('fileInput').click();}
+
+function handleImageSelect(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64full=e.target.result;
+    capturedImageB64=b64full.split(',')[1];
+    document.getElementById('previewImg').src=b64full;
+    document.getElementById('imgPreview').style.display='block';
+    document.getElementById('ipoText').textContent=file.name+' · '+Math.round(file.size/1024)+'KB';
+    document.getElementById('uploadZone').style.display='none';
+    document.getElementById('scanBtn').style.display='block';
+    document.getElementById('aiResult').classList.remove('visible');
+    document.getElementById('aiResult').style.display='none';
+    document.getElementById('aiEditForm').style.display='none';
+    document.getElementById('aiScanning').classList.remove('visible');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(){
+  capturedImageB64=null;
+  document.getElementById('previewImg').src='';
+  document.getElementById('imgPreview').style.display='none';
+  document.getElementById('uploadZone').style.display='block';
+  document.getElementById('scanBtn').style.display='none';
+  document.getElementById('aiResult').style.display='none';
+  document.getElementById('aiEditForm').style.display='none';
+  document.getElementById('aiScanning').classList.remove('visible');
+  document.getElementById('cameraInput').value='';
+  document.getElementById('fileInput').value='';
+}
+
+function resetAIPanel(){
+  clearImage();
+  document.getElementById('aiResult').style.display='none';
+  document.getElementById('aiEditForm').style.display='none';
+  document.getElementById('aiScanning').classList.remove('visible');
+}
+
+async function runAIScan(){
+  const apiKey=document.getElementById('apiKeyInput').value.trim();
+  if(!apiKey){toast('Please enter your Anthropic API key');return;}
+  if(!capturedImageB64){toast('Please select an image first');return;}
+
+  // Show scanning state
+  document.getElementById('scanBtn').style.display='none';
+  document.getElementById('aiScanning').style.display='block';
+  document.getElementById('aiScanning').classList.add('visible');
+  document.getElementById('aiResult').style.display='none';
+
+  const prompt=`Analyse this clothing item image carefully. Respond ONLY with a valid JSON object, no markdown, no explanation.
+
+Return exactly this structure:
+{
+  "type": "shirt" or "pant",
+  "name": "descriptive name like Navy Oxford Shirt or Charcoal Formal Trousers",
+  "colorName": "specific colour name like Deep Navy, Olive Green, Charcoal Grey, Burgundy, etc",
+  "colorHex": "best matching hex code like #1A3A5C",
+  "emoji": "single relevant emoji",
+  "textile": "fabric type if visible like Cotton, Linen, Polyester, Denim",
+  "fit": "Slim, Regular, or Relaxed",
+  "confidence": number from 0 to 100
+}
+
+Be specific with colours. Use the actual shade, not just basic colour names.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:400,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:capturedImageB64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+
+    document.getElementById('aiScanning').classList.remove('visible');
+    document.getElementById('aiScanning').style.display='none';
+
+    if(!res.ok){
+      const err=await res.json();
+      toast('API error: '+(err.error?.message||res.status));
+      document.getElementById('scanBtn').style.display='block';
+      return;
+    }
+
+    const data=await res.json();
+    let raw=data.content.find(b=>b.type==='text')?.text||'{}';
+    raw=raw.replace(/```json|```/g,'').trim();
+    const result=JSON.parse(raw);
+
+    aiDetectedColor=result.colorHex||'#888888';
+
+    // Show result card
+    document.getElementById('aiResult').style.display='block';
+    document.getElementById('aiResult').classList.add('visible');
+    document.getElementById('aiResultBody').innerHTML=`
+      <div class="ar-row"><div class="ar-key">Type</div><div class="ar-val">${result.type==='shirt'?'👔 Shirt / Top':'👖 Pant / Trouser'}</div></div>
+      <div class="ar-row"><div class="ar-key">Name</div><div class="ar-val">${result.name||'—'}</div></div>
+      <div class="ar-row"><div class="ar-key">Colour</div><div class="ar-val"><div class="ar-swatch" style="background:${result.colorHex||'#888'}"></div>${result.colorName||'—'} <span style="font-size:10px;color:var(--mist);font-weight:500;">${result.colorHex||''}</span></div></div>
+      <div class="ar-row"><div class="ar-key">Textile</div><div class="ar-val">${result.textile||'Not detected'}</div></div>
+      <div class="ar-row"><div class="ar-key">Fit</div><div class="ar-val">${result.fit||'—'}</div></div>
+      <div class="ar-row"><div class="ar-key">Confidence</div><div class="ar-val"><span class="ar-conf">${result.confidence||'—'}%</span></div></div>`;
+    document.getElementById('ar-edit-note');
+
+    // Pre-fill editable form
+    document.getElementById('ai-name').value=result.name||'';
+    document.getElementById('ai-type').value=result.type||'shirt';
+    document.getElementById('ai-colorname').value=result.colorName||'';
+    document.getElementById('ai-emoji').value=result.emoji||'👔';
+    document.getElementById('aiColorDot').style.background=result.colorHex||'#888';
+    document.getElementById('aiEditForm').style.display='block';
+
+    // Show harmony preview for detected colour
+    const detected={v:result.colorHex||'#888',n:result.colorName||'Unknown'};
+    const others=result.type==='shirt'?S.pants:S.shirts;
+    if(others.length){
+      const bestPair=others.map(o=>({o,sc:harmonyScore(detected.v,o.color)})).sort((a,b)=>b.sc-a.sc)[0];
+      const{label,cls}=scoreLabel(bestPair.sc);
+      const extra=document.createElement('div');
+      extra.style.cssText='margin-top:10px;padding:10px 12px;background:var(--ai-s);border-radius:var(--r-md);font-size:11px;';
+      extra.innerHTML=`<div style="font-weight:700;color:var(--ai);margin-bottom:3px;">✦ Colour Intelligence</div><div style="color:var(--ink);">Best pair: <strong>${bestPair.o.name}</strong> <span class="harmony-badge ${cls}" style="padding:2px 8px;font-size:10px;">${label} · ${bestPair.sc}</span></div>`;
+      document.getElementById('aiResultBody').appendChild(extra);
+    }
+
+  }catch(err){
+    document.getElementById('aiScanning').classList.remove('visible');
+    document.getElementById('aiScanning').style.display='none';
+    document.getElementById('scanBtn').style.display='block';
+    toast('Error: '+(err.message||'Could not analyse image'));
+    console.error(err);
+  }
+}
+
+function saveAIGarment(){
+  const name=document.getElementById('ai-name').value.trim();
+  const type=document.getElementById('ai-type').value;
+  const colorName=document.getElementById('ai-colorname').value.trim()||'Unknown';
+  const emoji=document.getElementById('ai-emoji').value.trim()||(type==='shirt'?'👔':'👖');
+  if(!name){toast('Please enter a name');return;}
+  const item={id:type[0]+Date.now(),name,emoji,color:aiDetectedColor,cn:colorName,status:'clean'};
+  if(type==='shirt')S.shirts.push(item);else S.pants.push(item);
+  S.laundry.push({id:'l'+item.id,name,type:type==='shirt'?'Shirt':'Pant',icon:emoji,status:'clean'});
+  save();closeSheet('garmentSheet');renderCloset();
+  toast('✦ '+name+' added via AI Scan');
+}
+
+// ══════════════════════════════════════════
+// LAUNDRY / ROUTINE SAVE
+// ══════════════════════════════════════════
+function saveLaundry(){
+  const name=document.getElementById('li-name').value.trim();
+  const type=document.getElementById('li-type').value;
+  const status=document.getElementById('li-status').value;
+  if(!name){toast('Please enter a name');return;}
+  S.laundry.push({id:'li'+Date.now(),name,type,icon:'👕',status});
+  save();closeSheet('laundrySheet');renderLaundry();toast(name+' added');
+}
+function saveRoutine(){
+  const name=document.getElementById('ri-name').value.trim();
+  const time=document.getElementById('ri-time').value;
+  const period=document.getElementById('ri-period').value;
+  if(!name){toast('Please enter a task name');return;}
+  S.routines.push({id:'rt'+Date.now(),name,time,period,cat:'routine'});
+  save();closeSheet('routineSheet');renderRoutine();toast('Task added');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// INIT
+renderToday();runCalc();
+</script>
+</body>
+</html>
