@@ -103,7 +103,7 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
 .oh-g{flex:1;border-radius:var(--r-md);overflow:hidden;border:1px solid rgba(255,255,255,0.9);box-shadow:0 4px 18px var(--sh-w);background:rgba(255,255,255,0.7);transition:transform 0.25s cubic-bezier(0.34,1.5,0.64,1);}
 .oh-g:active{transform:scale(0.96);}
 .oh-sw{height:90px;display:flex;align-items:center;justify-content:center;}
-.oh-sw-inner{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 3px 12px rgba(0,0,0,0.08);}
+.oh-sw-inner{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(0,0,0,0.10);overflow:visible;}
 .oh-gfoot{padding:10px 12px 12px;background:rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.8);}
 .oh-gname{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:-0.1px;line-height:1.3;}
 .oh-gcolor{font-size:10px;color:var(--mist);margin-top:2px;font-weight:500;}
@@ -177,7 +177,7 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
 .g-tile:active{transform:scale(0.94);}
 .g-tile.is-wash{opacity:0.52;}
 .g-sw{height:78px;display:flex;align-items:center;justify-content:center;position:relative;}
-.g-ew{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 12px rgba(0,0,0,0.07);}
+.g-ew{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,0.07);overflow:visible;}
 .wash-bdg{position:absolute;bottom:0;left:0;right:0;background:rgba(232,112,90,0.82);color:#fff;font-size:8px;font-weight:800;text-align:center;padding:2px 4px;letter-spacing:.8px;text-transform:uppercase;}
 
 /* Harmony score pill on garment tile */
@@ -192,6 +192,21 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
 .add-tile{border:1.5px dashed rgba(196,184,164,0.55);border-radius:var(--r-md);height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--stone);font-size:11px;font-weight:700;background:rgba(255,255,255,0.3);transition:all 0.2s;}
 .add-tile:active{transform:scale(0.95);background:rgba(232,112,90,0.05);color:var(--coral);border-color:var(--coral);}
 .add-tile-icon{font-size:22px;}
+/* Delete button on garment tile */
+.g-del-btn{
+  position:absolute; top:5px; left:5px;
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(232,112,90,0); border:none;
+  color:rgba(44,36,32,0.3); font-size:14px; line-height:1;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s cubic-bezier(0.34,1.5,0.64,1);
+  opacity:0; z-index:10;
+}
+.g-tile:hover .g-del-btn, .g-tile:focus-within .g-del-btn{
+  opacity:1; background:rgba(232,112,90,0.12); color:var(--coral);
+}
+.g-del-btn:hover{background:var(--coral) !important; color:#fff !important; transform:scale(1.15);}
+.g-del-btn:active{transform:scale(0.9);}
 
 /* ── MATRIX ── */
 .mx-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
@@ -274,6 +289,109 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
 .co-lbl{flex:1;font-size:12px;font-weight:600;color:var(--mist);}
 .co-bdg{font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);}
 .cob-opt{background:var(--coral-s);color:var(--coral);}.cob-ok{background:var(--sage-s);color:var(--sage);}.cob-low{background:rgba(196,184,164,.2);color:var(--stone);}
+
+/* ── LAUNDRY INTELLIGENCE ── */
+.li-card{
+  border-radius:var(--r-xl); margin-bottom:14px; overflow:hidden;
+  border:1px solid var(--glass-e);
+  box-shadow:0 8px 32px var(--sh-w), 0 1px 0 rgba(255,255,255,0.9) inset;
+}
+.li-card-head{
+  padding:18px 20px 14px;
+  display:flex; align-items:flex-start; gap:14px;
+}
+.li-health-ring{
+  position:relative; width:64px; height:64px; flex-shrink:0;
+}
+.li-health-ring svg{ transform:rotate(-90deg); }
+.li-ring-track{ fill:none; stroke:rgba(196,184,164,0.2); stroke-width:5; }
+.li-ring-fill{
+  fill:none; stroke-width:5; stroke-linecap:round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.22,1,0.36,1),
+              stroke 0.4s ease;
+}
+.li-ring-label{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; line-height:1;
+}
+.li-ring-num{
+  font-family:var(--f-d); font-size:19px; font-weight:600;
+  letter-spacing:-0.5px;
+}
+.li-ring-sub{ font-size:8px; font-weight:700; color:var(--mist); letter-spacing:.5px; text-transform:uppercase; margin-top:1px; }
+.li-head-text{ flex:1; }
+.li-verdict{
+  font-family:var(--f-d); font-size:20px; font-weight:500;
+  letter-spacing:-0.3px; line-height:1.1; margin-bottom:4px;
+}
+.li-verdict em{ font-style:italic; font-weight:300; }
+.li-next-wash{
+  font-size:11px; font-weight:600; color:var(--mist);
+  letter-spacing:0.1px; line-height:1.5;
+}
+
+/* Urgency levels */
+.li-urgent   { background:linear-gradient(155deg,rgba(232,112,90,0.10),rgba(255,252,248,0.85)); }
+.li-warning  { background:linear-gradient(155deg,rgba(201,164,90,0.10),rgba(255,252,248,0.85)); }
+.li-good     { background:linear-gradient(155deg,rgba(122,158,135,0.10),rgba(255,252,248,0.85)); }
+.li-fine     { background:linear-gradient(155deg,rgba(122,174,200,0.09),rgba(255,252,248,0.85)); }
+
+.li-ring-urgent  .li-ring-num { color:var(--coral); }
+.li-ring-warning .li-ring-num { color:var(--gold);  }
+.li-ring-good    .li-ring-num { color:var(--sage);  }
+.li-ring-fine    .li-ring-num { color:var(--sky);   }
+
+/* Per-item callout list */
+.li-items-section{
+  border-top:1px solid rgba(196,184,164,0.18);
+  padding:12px 20px 16px;
+}
+.li-items-title{
+  font-size:10px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; color:var(--mist); margin-bottom:10px;
+}
+.li-item-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(196,184,164,0.12);
+}
+.li-item-row:last-child{ border-bottom:none; }
+.li-item-icon{ flex-shrink:0; }
+.li-item-name{ flex:1; font-size:12px; font-weight:700; color:var(--ink); letter-spacing:-0.1px; }
+.li-item-sub { font-size:10px; color:var(--mist); font-weight:500; margin-top:1px; }
+.li-wear-bar{
+  width:52px; flex-shrink:0;
+}
+.li-wear-track{
+  height:4px; background:rgba(196,184,164,0.22); border-radius:2px;
+  overflow:hidden; margin-bottom:3px;
+}
+.li-wear-fill{ height:100%; border-radius:2px; transition:width 0.5s cubic-bezier(0.22,1,0.36,1); }
+.li-wear-label{ font-size:9px; font-weight:700; text-align:right; letter-spacing:.3px; }
+.li-wash-badge{
+  font-size:9px; font-weight:800; padding:3px 8px;
+  border-radius:var(--r-pill); flex-shrink:0; letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.lwb-now    { background:var(--coral-s); color:var(--coral); }
+.lwb-soon   { background:var(--gold-s);  color:var(--gold);  }
+.lwb-ok     { background:var(--sage-s);  color:var(--sage);  }
+
+/* Wash action row */
+.li-action-row{
+  border-top:1px solid rgba(196,184,164,0.18);
+  padding:12px 20px;
+  display:flex; gap:8px; align-items:center;
+}
+.li-action-btn{
+  flex:1; padding:11px; border:none; border-radius:var(--r-md);
+  font-family:var(--f-u); font-size:12px; font-weight:800;
+  cursor:pointer; transition:all .2s cubic-bezier(0.34,1.4,0.64,1);
+  letter-spacing:-0.1px;
+}
+.li-action-btn:active{ transform:scale(0.97); }
+.liab-p{ background:linear-gradient(135deg,var(--coral),var(--blush)); color:#fff; box-shadow:0 4px 14px rgba(232,112,90,.3); }
+.liab-g{ background:rgba(196,184,164,.15); color:var(--dusk); border:1px solid rgba(196,184,164,.25); }
 
 /* ── ACTION ROW ── */
 .act-row{display:flex;gap:8px;margin-bottom:14px;}
@@ -439,7 +557,11 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
       </div>
       <div class="sec-lbl">This Week</div>
       <div class="week-row" id="weekRow"></div>
-      <div class="sec-lbl">Laundry</div>
+
+      <div class="sec-lbl">Laundry Intelligence</div>
+      <div id="laundryIntel"></div>
+
+      <div class="sec-lbl">Laundry Summary</div>
       <div class="card" style="margin-bottom:14px;position:relative;">
         <div class="lq">
           <div class="lq-col lq-cl"><div class="lq-num" id="lq-c">0</div><div class="lq-lbl">Clean</div></div>
@@ -460,6 +582,10 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
     <!-- CLOSET -->
     <div class="page" id="page-closet">
       <div class="sec-title">My <span>Closet</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:600;color:var(--mist);" id="closetCount">0 shirts · 0 pants</div>
+        <button onclick="clearAllWardrobe()" style="font-size:10px;font-weight:700;color:var(--coral);background:var(--coral-s);border:none;border-radius:var(--r-pill);padding:5px 12px;cursor:pointer;letter-spacing:.3px;" title="Remove all clothes and start fresh">Reset Closet</button>
+      </div>
       <div class="seg">
         <button class="seg-btn on" onclick="showSeg('shirts',this)">Shirts & Tops</button>
         <button class="seg-btn" onclick="showSeg('pants',this)">Pants</button>
@@ -493,6 +619,7 @@ body{font-family:var(--f-u);background:var(--ivory);color:var(--ink);min-height:
     <!-- LAUNDRY -->
     <div class="page" id="page-laundry">
       <div class="sec-title">Laundry <span>Board</span></div>
+      <div id="laundryIntelFull"></div>
       <div class="act-row">
         <button class="ar-btn ar-p" onclick="markAllClean()">All Washed ✓</button>
         <button class="ar-btn ar-g" onclick="openSheet('laundrySheet')">+ Add Item</button>
@@ -832,22 +959,8 @@ let S=JSON.parse(localStorage.getItem('lifeos-v4')||'{}');
 if(!S.washDay)S.washDay=null;
 if(!S.streak)S.streak=1;
 
-if(!S.shirts.length){
-  S.shirts=[
-    {id:'s1',name:'White Oxford',emoji:'👔',color:'#E8E8E8',cn:'White',status:'clean'},
-    {id:'s2',name:'Sky Blue Formal',emoji:'👔',color:'#B8D4E8',cn:'Sky Blue',status:'clean'},
-    {id:'s3',name:'Navy Micro-Check',emoji:'👔',color:'#1A2F4A',cn:'Navy',status:'worn'},
-    {id:'s4',name:'Olive Linen',emoji:'👔',color:'#3D5A2E',cn:'Olive',status:'clean'},
-    {id:'s5',name:'Graphite Grey',emoji:'👔',color:'#4A4A4A',cn:'Graphite',status:'clean'},
-    {id:'s6',name:'Burgundy Slim',emoji:'👔',color:'#5C1A1A',cn:'Burgundy',status:'clean'},
-  ];
-  S.pants=[
-    {id:'p1',name:'Black Trousers',emoji:'👖',color:'#1A1A1A',cn:'Black',status:'clean'},
-    {id:'p2',name:'Navy Chinos',emoji:'👖',color:'#1C3052',cn:'Navy',status:'clean'},
-    {id:'p3',name:'Charcoal Trousers',emoji:'👖',color:'#3A3A3A',cn:'Charcoal',status:'worn'},
-    {id:'p4',name:'Stone Chinos',emoji:'👖',color:'#B8A882',cn:'Stone',status:'clean'},
-  ];
-  S.laundry=[...S.shirts.map(s=>({id:'l'+s.id,name:s.name,type:'Shirt',icon:s.emoji,status:s.status})),...S.pants.map(p=>({id:'l'+p.id,name:p.name,type:'Pant',icon:p.emoji,status:p.status}))];
+// Seed default routines only — wardrobe starts fresh
+if(!S.routines.length){
   S.routines=[
     {id:'r1',name:'Check today\'s outfit',time:'06:45',period:'morning',cat:'wardrobe'},
     {id:'r2',name:'Morning stretch',time:'06:30',period:'morning',cat:'routine'},
@@ -857,8 +970,6 @@ if(!S.shirts.length){
     {id:'r6',name:'Iron tomorrow\'s outfit',time:'21:00',period:'evening',cat:'wardrobe'},
     {id:'r7',name:'Wind down',time:'22:00',period:'evening',cat:'routine'},
   ];
-  const now=new Date();
-  for(let i=1;i<=10;i++){const d=new Date(now);d.setDate(d.getDate()-i);if(d.getDay()>0&&d.getDay()<6)S.combos.push({date:d.toISOString().split('T')[0],shirtId:S.shirts[i%6].id,pantId:S.pants[i%4].id});}
   save();
 }
 function save(){localStorage.setItem('lifeos-v4',JSON.stringify(S));}
@@ -908,6 +1019,7 @@ function renderToday(){
   document.getElementById('lq-wsh').textContent=S.laundry.filter(i=>i.status==='wash').length;
   if(S.washDay){document.getElementById('wdTxt').textContent='🧺 Wash day: '+S.washDay;['s','u','w'].forEach((d,i)=>{const days=['Saturday','Sunday','Wednesday'];document.getElementById('wdb-'+d).classList.toggle('on',S.washDay===days[i]);});}
   renderOutfit();renderWeek();
+  renderLaundryIntel('laundryIntel',false);
 }
 
 function renderOutfit(){
@@ -932,9 +1044,9 @@ function renderOutfit(){
   const{label,cls}=scoreLabel(sc);
   el.innerHTML=`
     <div class="oh-pair">
-      <div class="oh-g"><div class="oh-sw" style="background:${shirt.color}18;"><div class="oh-sw-inner" style="background:${shirt.color}30;">${shirt.emoji}</div></div><div class="oh-gfoot"><div class="oh-gname">${shirt.name}</div><div class="oh-gcolor">${shirt.cn}</div></div></div>
+      <div class="oh-g"><div class="oh-sw" style="background:${shirt.color}18;"><div class="oh-sw-inner" style="background:${shirt.color}22;">${shirtSVG(shirt.color)}</div></div><div class="oh-gfoot"><div class="oh-gname">${shirt.name}</div><div class="oh-gcolor">${shirt.cn}</div></div></div>
       <div class="oh-div">+</div>
-      <div class="oh-g"><div class="oh-sw" style="background:${pant.color}18;"><div class="oh-sw-inner" style="background:${pant.color}30;">${pant.emoji}</div></div><div class="oh-gfoot"><div class="oh-gname">${pant.name}</div><div class="oh-gcolor">${pant.cn}</div></div></div>
+      <div class="oh-g"><div class="oh-sw" style="background:${pant.color}18;"><div class="oh-sw-inner" style="background:${pant.color}22;">${pantSVG(pant.color)}</div></div><div class="oh-gfoot"><div class="oh-gname">${pant.name}</div><div class="oh-gcolor">${pant.cn}</div></div></div>
     </div>
     <div style="margin-bottom:12px;">
       <span class="harmony-badge ${cls}">
@@ -973,7 +1085,9 @@ function renderWeek(){
     const s=c?S.shirts.find(x=>x.id===c.shirtId):null;
     const p=c?S.pants.find(x=>x.id===c.pantId):null;
     const isT=ds===today,isF=d>n;
-    html+=`<div class="day-tile${isT?' is-today':''}${isF?' is-future':''}"><div class="dt-name">${dnames[i]}</div><span class="dt-emoji">${s&&p?s.emoji+p.emoji:'—'}</span><div class="dt-num">${d.getDate()}</div></div>`;
+    const sIcon=s?`<svg viewBox="0 0 56 56" width="14" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M10 18 L4 28 L13 30 L13 52 L43 52 L43 30 L52 28 L46 18 L36 24 C34 15 22 15 20 24 Z" fill="${s.color}" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><path d="M20 24 L28 30 L28 20 C26 14 21 14 20 18 Z" fill="rgba(0,0,0,0.2)"/><path d="M36 24 L28 30 L28 20 C30 14 35 14 36 18 Z" fill="rgba(0,0,0,0.2)"/></svg>`:'';
+    const pIcon=p?`<svg viewBox="0 0 56 56" width="14" height="14" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="40" height="8" rx="3" fill="${p.color}" opacity="0.8"/><path d="M8 16 L8 50 Q8 53 14 53 L24 53 L28 30 L12 16 Z" fill="${p.color}" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><path d="M48 16 L48 50 Q48 53 42 53 L32 53 L28 30 L44 16 Z" fill="${p.color}" stroke="rgba(255,255,255,0.2)" stroke-width="1"/></svg>`:'';
+    html+=`<div class="day-tile${isT?' is-today':''}${isF?' is-future':''}"><div class="dt-name">${dnames[i]}</div><span class="dt-emoji" style="display:flex;align-items:center;justify-content:center;gap:2px;">${s&&p?sIcon+pIcon:'<span style="font-size:16px;opacity:.4;">—</span>'}</span><div class="dt-num">${d.getDate()}</div></div>`;
   }
   wrap.innerHTML=html;
 }
@@ -984,7 +1098,17 @@ function recentCombos(days){const cut=new Date();cut.setDate(cut.getDate()-days)
 // ══════════════════════════════════════════
 // CLOSET
 // ══════════════════════════════════════════
-function renderCloset(){buildGrid('shirt');buildGrid('pant');buildMatrix();buildComboHist();buildHarmonyGuide();}
+function clearAllWardrobe(){
+  if(!confirm('Remove all clothes from your closet and start fresh? This cannot be undone.')) return;
+  S.shirts=[];S.pants=[];S.combos=[];S.laundry=[];
+  save();renderCloset();renderToday();
+  toast('Closet cleared — add your clothes fresh ✦');
+}
+
+function renderCloset(){buildGrid('shirt');buildGrid('pant');buildMatrix();buildComboHist();buildHarmonyGuide();
+  const el=document.getElementById('closetCount');
+  if(el) el.textContent=`${S.shirts.length} shirt${S.shirts.length!==1?'s':''} · ${S.pants.length} pant${S.pants.length!==1?'s':''}`;
+}
 
 function bestHarmonyForGarment(item,type){
   const others=type==='shirt'?S.pants:S.shirts;
@@ -992,6 +1116,69 @@ function bestHarmonyForGarment(item,type){
   const scores=others.map(o=>harmonyScore(item.color,o.color));
   return Math.max(...scores);
 }
+
+// ── SVG ICON GENERATORS (colour-accurate) ──────────────
+function shirtSVG(hex){
+  // Compute a slightly darker shade for collar/cuffs detail
+  const hsl=hexToHSL(hex);
+  const darkerL=Math.max(5,hsl.l-18);
+  const shadow=`hsl(${hsl.h},${hsl.s}%,${darkerL}%)`;
+  const highlight=`hsl(${hsl.h},${Math.max(0,hsl.s-10)}%,${Math.min(98,hsl.l+22)}%)`;
+  // Determine stroke colour based on lightness
+  const stroke=hsl.l>82?'rgba(0,0,0,0.18)':'rgba(255,255,255,0.25)';
+  return `<svg viewBox="0 0 56 56" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+    <!-- body -->
+    <path d="M10 18 L4 28 L13 30 L13 52 L43 52 L43 30 L52 28 L46 18 L36 24 C34 15 22 15 20 24 Z"
+      fill="${hex}" stroke="${stroke}" stroke-width="1.2"/>
+    <!-- collar left -->
+    <path d="M20 24 L28 30 L28 20 C26 14 21 14 20 18 Z"
+      fill="${shadow}" stroke="${stroke}" stroke-width="0.8" opacity="0.85"/>
+    <!-- collar right -->
+    <path d="M36 24 L28 30 L28 20 C30 14 35 14 36 18 Z"
+      fill="${shadow}" stroke="${stroke}" stroke-width="0.8" opacity="0.85"/>
+    <!-- sleeve highlight -->
+    <path d="M10 18 L4 28 L9 29 L14 20 Z" fill="${highlight}" opacity="0.35"/>
+    <path d="M46 18 L52 28 L47 29 L42 20 Z" fill="${highlight}" opacity="0.35"/>
+    <!-- button line -->
+    <line x1="28" y1="30" x2="28" y2="50" stroke="${stroke}" stroke-width="1" opacity="0.6"/>
+    <circle cx="28" cy="35" r="1.2" fill="${stroke}" opacity="0.7"/>
+    <circle cx="28" cy="41" r="1.2" fill="${stroke}" opacity="0.7"/>
+    <circle cx="28" cy="47" r="1.2" fill="${stroke}" opacity="0.7"/>
+  </svg>`;
+}
+
+function pantSVG(hex){
+  const hsl=hexToHSL(hex);
+  const darkerL=Math.max(5,hsl.l-16);
+  const shadow=`hsl(${hsl.h},${hsl.s}%,${darkerL}%)`;
+  const highlight=`hsl(${hsl.h},${Math.max(0,hsl.s-8)}%,${Math.min(98,hsl.l+20)}%)`;
+  const stroke=hsl.l>82?'rgba(0,0,0,0.18)':'rgba(255,255,255,0.22)';
+  return `<svg viewBox="0 0 56 56" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+    <!-- waistband -->
+    <rect x="8" y="8" width="40" height="8" rx="3"
+      fill="${shadow}" stroke="${stroke}" stroke-width="1"/>
+    <!-- left leg -->
+    <path d="M8 16 L8 50 Q8 53 14 53 L24 53 L28 30 L12 16 Z"
+      fill="${hex}" stroke="${stroke}" stroke-width="1.2"/>
+    <!-- right leg -->
+    <path d="M48 16 L48 50 Q48 53 42 53 L32 53 L28 30 L44 16 Z"
+      fill="${hex}" stroke="${stroke}" stroke-width="1.2"/>
+    <!-- centre seam -->
+    <line x1="28" y1="16" x2="28" y2="30" stroke="${stroke}" stroke-width="1.2" opacity="0.7"/>
+    <!-- leg highlight left -->
+    <path d="M9 18 L9 46 L14 46 L14 18 Z" fill="${highlight}" opacity="0.25"/>
+    <!-- belt loop detail -->
+    <rect x="18" y="7" width="4" height="4" rx="1" fill="${highlight}" opacity="0.5"/>
+    <rect x="34" y="7" width="4" height="4" rx="1" fill="${highlight}" opacity="0.5"/>
+    <!-- button -->
+    <circle cx="28" cy="12" r="2" fill="${highlight}" opacity="0.7" stroke="${stroke}" stroke-width="0.7"/>
+  </svg>`;
+}
+
+function garmentIcon(type, hex){
+  return type==='shirt' ? shirtSVG(hex) : pantSVG(hex);
+}
+// ── END SVG ICONS ──────────────────────────────────────
 
 function buildGrid(type){
   const items=type==='shirt'?S.shirts:S.pants;
@@ -1001,17 +1188,53 @@ function buildGrid(type){
   items.forEach(item=>{
     const bs=bestHarmonyForGarment(item,type);
     const{dot}=bs?scoreLabel(bs):{dot:''};
-    html+=`<div class="g-tile${item.status==='wash'?' is-wash':''}">
-      <div class="g-sw" style="background:${item.color}14;">
-        <div class="g-ew" style="background:${item.color}28;">${item.emoji}</div>
+    html+=`<div class="g-tile${item.status==='wash'?' is-wash':''}" id="gtile-${item.id}">
+      <div class="g-sw" style="background:${item.color}14; position:relative;">
+        <div class="g-ew" style="background:${item.color}22; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          ${garmentIcon(type, item.color)}
+        </div>
         ${item.status==='wash'?'<div class="wash-bdg">Washing</div>':''}
         ${bs&&dot?`<div class="g-harm ${dot}">${bs}</div>`:''}
+        <button class="g-del-btn" onclick="confirmDelete('${item.id}','${type}',event)" title="Remove item">×</button>
       </div>
       <div class="g-foot"><div class="g-tname">${item.name}</div><div class="g-tsub">${item.cn} · ${item.status}</div></div>
     </div>`;
   });
   html+=`<div class="add-tile" onclick="openAddGarment('${type}')"><span class="add-tile-icon">＋</span><span>Add ${type==='shirt'?'Shirt':'Pant'}</span></div>`;
   grid.innerHTML=html;
+}
+
+function confirmDelete(id, type, e){
+  e.stopPropagation();
+  const items=type==='shirt'?S.shirts:S.pants;
+  const item=items.find(x=>x.id===id);
+  if(!item) return;
+  // Inline confirm UI — replace tile briefly
+  const tile=document.getElementById('gtile-'+id);
+  if(!tile) return;
+  tile.innerHTML=`
+    <div style="padding:12px 10px; text-align:center; display:flex; flex-direction:column; gap:8px; height:100%; justify-content:center;">
+      <div style="font-size:10px; font-weight:700; color:var(--coral); letter-spacing:.3px; line-height:1.4;">Remove<br>${item.name}?</div>
+      <button onclick="deleteGarment('${id}','${type}')" style="background:var(--coral);color:#fff;border:none;border-radius:var(--r-sm);padding:6px 8px;font-family:var(--f-u);font-size:10px;font-weight:800;cursor:pointer;">Delete</button>
+      <button onclick="buildGrid('${type}')" style="background:rgba(196,184,164,.2);color:var(--mist);border:none;border-radius:var(--r-sm);padding:5px 8px;font-family:var(--f-u);font-size:10px;font-weight:700;cursor:pointer;">Cancel</button>
+    </div>`;
+}
+
+function deleteGarment(id, type){
+  if(type==='shirt'){
+    S.shirts=S.shirts.filter(x=>x.id!==id);
+    // Remove any combos that referenced this shirt
+    S.combos=S.combos.filter(c=>c.shirtId!==id);
+  } else {
+    S.pants=S.pants.filter(x=>x.id!==id);
+    S.combos=S.combos.filter(c=>c.pantId!==id);
+  }
+  // Remove from laundry too
+  S.laundry=S.laundry.filter(x=>x.id!=='l'+id);
+  save();
+  renderCloset();
+  renderToday();
+  toast('Item removed from your closet');
 }
 
 function buildMatrix(){
@@ -1047,25 +1270,174 @@ function buildComboHist(){
     if(!s||!p)return '';
     const sc=harmonyScore(s.color,p.color);
     const{mini,cls}=scoreLabel(sc);
+    const sIco=`<svg viewBox="0 0 56 56" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M10 18 L4 28 L13 30 L13 52 L43 52 L43 30 L52 28 L46 18 L36 24 C34 15 22 15 20 24 Z" fill="${s.color}" stroke="rgba(0,0,0,0.1)" stroke-width="1.5"/><path d="M20 24 L28 30 L28 20 C26 14 21 14 20 18 Z" fill="rgba(0,0,0,0.2)"/><path d="M36 24 L28 30 L28 20 C30 14 35 14 36 18 Z" fill="rgba(0,0,0,0.2)"/></svg>`;
+    const pIco=`<svg viewBox="0 0 56 56" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="40" height="8" rx="3" fill="${p.color}" opacity="0.8"/><path d="M8 16 L8 50 Q8 53 14 53 L24 53 L28 30 L12 16 Z" fill="${p.color}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/><path d="M48 16 L48 50 Q48 53 42 53 L32 53 L28 30 L44 16 Z" fill="${p.color}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/></svg>`;
     return `<div class="chi">
       <div class="chi-date">${c.date}</div>
-      <div class="chi-em">${s.emoji}${p.emoji}</div>
+      <div class="chi-em" style="display:flex;align-items:center;gap:3px;">${sIco}${pIco}</div>
       <div class="chi-names"><div class="chi-n1">${s.name}</div><div class="chi-n2">+ ${p.name}</div></div>
       <span class="chi-harm ${cls}" style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;">${mini}</span>
     </div>`;
   }).join('');
 }
 
+// ══════════════════════════════════════════
+// LAUNDRY INTELLIGENCE ENGINE
+// ══════════════════════════════════════════
+
+const WEAR_LIMIT={shirt:2,pant:3,'T-Shirt':1,'Formal Shirt':1,'Chinos':3,'Jeans':4,default:2};
+function wearLimit(item){return WEAR_LIMIT[item.type||'']||WEAR_LIMIT.default;}
+
+function computeWearCounts(){
+  const counts={};
+  S.laundry.forEach(i=>{counts[i.id]=0;});
+  const sorted=[...S.combos].sort((a,b)=>b.date.localeCompare(a.date));
+  sorted.forEach(c=>{
+    const sid='l'+c.shirtId,pid='l'+c.pantId;
+    const sItem=S.laundry.find(x=>x.id===sid);
+    const pItem=S.laundry.find(x=>x.id===pid);
+    if(sItem&&sItem.status!=='clean') counts[sid]=(counts[sid]||0)+1;
+    if(pItem&&pItem.status!=='clean') counts[pid]=(counts[pid]||0)+1;
+  });
+  S.laundry.forEach(i=>{if((i.status==='worn'||i.status==='wash')&&!counts[i.id])counts[i.id]=1;});
+  return counts;
+}
+
+function daysUntilWashDay(){
+  if(!S.washDay)return null;
+  const m={Sunday:0,Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5,Saturday:6};
+  const today=new Date().getDay(),target=m[S.washDay];
+  if(target===undefined)return null;
+  let diff=target-today;if(diff<=0)diff+=7;return diff;
+}
+
+function cleanCombosLeft(){
+  const used=new Set(recentCombos(15).map(c=>c.shirtId+'|'+c.pantId));
+  let n=0;
+  S.shirts.filter(s=>s.status==='clean').forEach(s=>{S.pants.filter(p=>p.status==='clean').forEach(p=>{if(!used.has(s.id+'|'+p.id))n++;});});
+  return n;
+}
+
+function officeDaysLeft(){
+  return Math.min(S.shirts.filter(s=>s.status==='clean').length,S.pants.filter(p=>p.status==='clean').length);
+}
+
+function laundryIntelligence(){
+  const wornItems=S.laundry.filter(i=>i.status==='worn');
+  const washItems=S.laundry.filter(i=>i.status==='wash');
+  const cleanItems=S.laundry.filter(i=>i.status==='clean');
+  const wearCounts=computeWearCounts();
+  const daysLeft=officeDaysLeft();
+  const combosLeft=cleanCombosLeft();
+  const daysToWash=daysUntilWashDay();
+  const total=S.laundry.length||1;
+  const overdueItems=S.laundry.filter(i=>{if(i.status==='wash')return false;const w=wearCounts[i.id]||0;return w>=wearLimit(i);});
+  const soonItems=S.laundry.filter(i=>{if(i.status==='wash'||overdueItems.includes(i))return false;const w=wearCounts[i.id]||0,lim=wearLimit(i);return w===lim-1&&i.status==='worn';});
+  let health=100;
+  health-=Math.min(40,overdueItems.length*12);
+  health-=Math.min(20,soonItems.length*6);
+  health-=Math.max(0,(3-daysLeft)*10);
+  health-=Math.max(0,(5-combosLeft)*4);
+  if(wornItems.length+washItems.length>total*0.6)health-=15;
+  health=Math.max(0,Math.min(100,Math.round(health)));
+  let urgency,verdict,suggestion;
+  if(health<35||daysLeft<2||overdueItems.length>3){
+    urgency='urgent';verdict='Wash <em>tonight</em>';
+    suggestion=daysLeft<2?`Only ${daysLeft} clean outfit${daysLeft!==1?'s':''} left. Wash before tomorrow.`:`${overdueItems.length} item${overdueItems.length!==1?'s':''} past wear limit.`;
+  } else if(health<60||daysLeft<3||overdueItems.length>1){
+    urgency='warning';verdict='Wash <em>soon</em>';
+    const d=daysToWash!==null?`Wash day in ${daysToWash} day${daysToWash!==1?'s':''}.`:'Plan a wash in 1–2 days.';
+    suggestion=`${d} ${daysLeft} outfit${daysLeft!==1?'s':''} remaining.`;
+  } else if(health<80){
+    urgency='good';verdict='On <em>schedule</em>';
+    const d=daysToWash!==null?`Wash on ${S.washDay}.`:'Keep up your routine.';
+    suggestion=`${daysLeft} clean outfit${daysLeft!==1?'s':''} ready. ${d}`;
+  } else {
+    urgency='fine';verdict='All <em>good</em>';
+    suggestion=`${daysLeft} outfit${daysLeft!==1?'s':''} available. ${combosLeft} combos free.`;
+  }
+  return{health,urgency,verdict,suggestion,daysLeft,combosLeft,daysToWash,overdueItems,soonItems,wearCounts,total,wornCount:wornItems.length,washCount:washItems.length,cleanCount:cleanItems.length};
+}
+
+function liItemIcon(item){
+  const gid=item.id.replace(/^l/,'');
+  const g=S.shirts.find(x=>x.id===gid)||S.pants.find(x=>x.id===gid);
+  const col=g?g.color:'#B8A882';
+  const isP=(item.type||'').match(/pant|jean|chino/i);
+  return `<div style="width:28px;height:28px;border-radius:50%;background:${col}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    ${isP
+      ?`<svg viewBox="0 0 56 56" width="17" height="17"><rect x="8" y="8" width="40" height="8" rx="3" fill="${col}" opacity="0.8"/><path d="M8 16 L8 50 Q8 53 14 53 L24 53 L28 30 L12 16 Z" fill="${col}" stroke="rgba(0,0,0,0.07)" stroke-width="1"/><path d="M48 16 L48 50 Q48 53 42 53 L32 53 L28 30 L44 16 Z" fill="${col}" stroke="rgba(0,0,0,0.07)" stroke-width="1"/></svg>`
+      :`<svg viewBox="0 0 56 56" width="17" height="17"><path d="M10 18 L4 28 L13 30 L13 52 L43 52 L43 30 L52 28 L46 18 L36 24 C34 15 22 15 20 24 Z" fill="${col}" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/><path d="M20 24 L28 30 L28 20 C26 14 21 14 20 18 Z" fill="rgba(0,0,0,0.18)"/><path d="M36 24 L28 30 L28 20 C30 14 35 14 36 18 Z" fill="rgba(0,0,0,0.18)"/></svg>`
+    }</div>`;
+}
+
+function renderLaundryIntel(targetId,showFull){
+  const el=document.getElementById(targetId);
+  if(!el)return;
+  if(!S.laundry.length){el.innerHTML='';return;}
+  const I=laundryIntelligence();
+  const ringR=26,circ=2*Math.PI*ringR,offset=circ*(1-I.health/100);
+  const ringCol=I.urgency==='urgent'?'var(--coral)':I.urgency==='warning'?'var(--gold)':I.urgency==='good'?'var(--sage)':'var(--sky)';
+  const ringCls=`li-ring-${I.urgency==='fine'?'fine':I.urgency==='good'?'good':I.urgency==='warning'?'warning':'urgent'}`;
+  const flagged=[
+    ...I.overdueItems.map(i=>({i,wears:I.wearCounts[i.id]||0,limit:wearLimit(i),badge:'lwb-now',txt:'Wash Now'})),
+    ...I.soonItems.map(i=>({i,wears:I.wearCounts[i.id]||0,limit:wearLimit(i),badge:'lwb-soon',txt:'Wash Soon'}))
+  ];
+  const display=(flagged.length?flagged:S.laundry.filter(i=>i.status==='worn').slice(0,showFull?20:4).map(i=>({i,wears:I.wearCounts[i.id]||0,limit:wearLimit(i),badge:'lwb-ok',txt:'Worn'}))).slice(0,showFull?20:4);
+  const itemsHTML=display.map(({i,wears,limit,badge,txt})=>{
+    const pct=Math.min(100,Math.round(wears/limit*100));
+    const fc=badge==='lwb-now'?'var(--coral)':badge==='lwb-soon'?'var(--gold)':'var(--sage)';
+    return `<div class="li-item-row">${liItemIcon(i)}<div style="flex:1;"><div class="li-item-name">${i.name}</div><div class="li-item-sub">${i.type} · ${wears}/${limit} wears</div></div><div class="li-wear-bar"><div class="li-wear-track"><div class="li-wear-fill" style="width:${pct}%;background:${fc};"></div></div><div class="li-wear-label" style="color:${fc};">${wears}/${limit}</div></div><span class="li-wash-badge ${badge}">${txt}</span></div>`;
+  }).join('');
+  el.innerHTML=`<div class="li-card li-${I.urgency}">
+    <div class="li-card-head">
+      <div class="li-health-ring ${ringCls}">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle class="li-ring-track" cx="32" cy="32" r="${ringR}"/>
+          <circle class="li-ring-fill" cx="32" cy="32" r="${ringR}" stroke="${ringCol}" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"/>
+        </svg>
+        <div class="li-ring-label"><div class="li-ring-num">${I.health}</div><div class="li-ring-sub">Health</div></div>
+      </div>
+      <div class="li-head-text">
+        <div class="li-verdict">${I.verdict}</div>
+        <div class="li-next-wash">${I.suggestion}</div>
+        ${I.daysToWash!==null?`<div style="margin-top:6px;font-size:11px;font-weight:700;color:${ringCol};">🗓 ${S.washDay} in ${I.daysToWash} day${I.daysToWash!==1?'s':''}</div>`:''}
+      </div>
+    </div>
+    ${display.length?`<div class="li-items-section"><div class="li-items-title">${flagged.length?'Items needing attention':'Currently worn'}</div>${itemsHTML}</div>`:''}
+    <div class="li-action-row">
+      <button class="li-action-btn liab-p" onclick="showPage('laundry')">Laundry Board →</button>
+      ${I.overdueItems.length>0?`<button class="li-action-btn liab-g" onclick="bulkMoveToWash()">Queue All Overdue</button>`:''}
+    </div>
+  </div>`;
+}
+
+function bulkMoveToWash(){
+  const I=laundryIntelligence();
+  let moved=0;
+  I.overdueItems.forEach(i=>{
+    i.status='wash';
+    const gid=i.id.replace(/^l/,'');
+    const s=S.shirts.find(x=>x.id===gid),p=S.pants.find(x=>x.id===gid);
+    if(s)s.status='wash';if(p)p.status='wash';
+    moved++;
+  });
+  if(!moved){toast('No overdue items found');return;}
+  save();renderToday();renderLaundryIntel('laundryIntelFull',true);renderLaundry();
+  toast(`${moved} item${moved!==1?'s':''} queued for washing`);
+}
+
+// ══════════════════════════════════════════
+// LAUNDRY RENDER
+// ══════════════════════════════════════════
 function showSeg(seg,btn){
   ['shirts','pants','matrix'].forEach(s=>{document.getElementById('seg-'+s).style.display=s===seg?'block':'none';});
   document.querySelectorAll('#page-closet .seg-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
 }
 
-// ══════════════════════════════════════════
-// LAUNDRY
-// ══════════════════════════════════════════
 function renderLaundry(){
+  renderLaundryIntel('laundryIntelFull',true);
   const g={clean:[],worn:[],wash:[]};
   S.laundry.forEach(i=>{if(g[i.status])g[i.status].push(i);});
   ['clean','worn','wash'].forEach(st=>{
@@ -1073,14 +1445,25 @@ function renderLaundry(){
     document.getElementById('lc-'+short).textContent=g[st].length;
     const el=document.getElementById('ll-'+short);
     if(!g[st].length){el.innerHTML=`<div class="l-empty">Empty</div>`;return;}
-    el.innerHTML=g[st].map(item=>`<div class="l-item">
-      <span class="li-icon">${item.icon||'👕'}</span>
-      <span class="li-name">${item.name}</span>
-      <div class="li-acts">
-        ${st!=='clean'?`<button class="la la-sg" onclick="moveL('${item.id}','clean')" title="Clean">✓</button>`:''}
-        ${st==='clean'?`<button class="la la-gd" onclick="moveL('${item.id}','worn')" title="Worn">◐</button>`:''}
-        ${st!=='wash'?`<button class="la la-co" onclick="moveL('${item.id}','wash')" title="Wash">⟳</button>`:''}
-      </div></div>`).join('');
+    const wearCounts=computeWearCounts();
+    el.innerHTML=g[st].map(item=>{
+      const wears=wearCounts[item.id]||0;
+      const limit=wearLimit(item);
+      const pct=Math.min(100,Math.round(wears/limit*100));
+      const fc=pct>=100?'var(--coral)':pct>=66?'var(--gold)':'var(--sage)';
+      return `<div class="l-item">
+        ${liItemIcon(item)}
+        <div style="flex:1;">
+          <span class="li-name">${item.name}</span>
+          ${wears>0?`<div style="margin-top:3px;"><div style="height:2px;background:rgba(196,184,164,.2);border-radius:1px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${fc};border-radius:1px;"></div></div></div>`:''}
+        </div>
+        <div class="li-acts">
+          ${st!=='clean'?`<button class="la la-sg" onclick="moveL('${item.id}','clean')" title="Clean">✓</button>`:''}
+          ${st==='clean'?`<button class="la la-gd" onclick="moveL('${item.id}','worn')" title="Worn">◐</button>`:''}
+          ${st!=='wash'?`<button class="la la-co" onclick="moveL('${item.id}','wash')" title="Wash">⟳</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
   });
 }
 function moveL(id,status){
@@ -1089,13 +1472,17 @@ function moveL(id,status){
   const gid=id.replace(/^l/,'');
   const s=S.shirts.find(x=>x.id===gid),p=S.pants.find(x=>x.id===gid);
   if(s)s.status=status;if(p)p.status=status;
-  save();renderLaundry();toast(`${item.name} → ${status}`);
+  save();renderLaundry();
+  renderLaundryIntel('laundryIntel',false);
+  toast(`${item.name} → ${status}`);
 }
 function markAllClean(){
   S.laundry.forEach(i=>{if(i.status==='wash')i.status='clean';});
   S.shirts.forEach(s=>{if(s.status==='wash')s.status='clean';});
   S.pants.forEach(p=>{if(p.status==='wash')p.status='clean';});
-  save();renderLaundry();toast('All clean ✦');
+  save();renderLaundry();
+  renderLaundryIntel('laundryIntel',false);
+  toast('All clean ✦');
 }
 
 // ══════════════════════════════════════════
