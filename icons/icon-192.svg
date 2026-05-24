@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="42" fill="#131314"/>
+  <!-- Ambient glow -->
+  <circle cx="60" cy="60" r="80" fill="rgba(172,199,255,0.08)"/>
+  <!-- Shirt icon -->
+  <path d="M72 52 L60 62 L48 72 L55 80 L62 76 L62 140 L130 140 L130 76 L137 80 L144 72 L132 62 L120 52 C118 42 96 38 96 38 C96 38 74 42 72 52 Z" fill="none" stroke="#acc7ff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Collar -->
+  <path d="M82 56 L96 68 L110 56" fill="none" stroke="#acc7ff" stroke-width="4" stroke-linejoin="round"/>
+  <!-- L text -->
+  <!-- dot accent -->
+  <circle cx="152" cy="48" r="8" fill="#acc7ff" opacity="0.8"/>
+</svg>
