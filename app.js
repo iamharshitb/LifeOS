@@ -57,10 +57,6 @@ const FIREBASE_CONFIG = {
   appId: "1:70872415259:web:2db666bc97c8204a544cbe"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-};
-
 // ── Firebase state ──
 let db = null;
 let fbReady = false;
