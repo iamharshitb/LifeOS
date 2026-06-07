@@ -16,10 +16,6 @@ async function requestNotificationPermission() {
 
 function scheduleWashDayReminder(washDay) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
-<<<<<<< HEAD
-=======
-  // Use SW background sync for real scheduling; for now use a daily check
->>>>>>> 7d8b60af2baaf439e35b20a02307ba0931a3e784
   localStorage.setItem('lifeos-wash-notify', washDay);
 }
 
@@ -31,7 +27,6 @@ function checkAndNotify() {
   if (days[washDay] === today) {
     new Notification('LifeOS Laundry Reminder 🧺', {
       body: "Today is your wash day! Queue overdue items.",
-<<<<<<< HEAD
       icon: './icons/icon-192.svg',
       badge: './icons/icon-192.svg'
     });
@@ -49,12 +44,12 @@ setTimeout(checkAndNotify, 3000);
 // IMPORTANT: Replace these values with your actual Firebase config
 // Go to: Firebase Console → lifeos project → Project Settings → Your apps → Config
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCTUQanbXAxaQd5TyiDLTyL_WAV8ixeNQw",
-  authDomain: "lifeos-pwa.firebaseapp.com",
-  projectId: "lifeos-pwa",
-  storageBucket: "lifeos-pwa.firebasestorage.app",
+  apiKey:            "AIzaSyCTUQanbXAxaQd5TyiDLTyL_WAV8ixeNQw",
+  authDomain:        "lifeos-pwa.firebaseapp.com",
+  projectId:         "lifeos-pwa",
+  storageBucket:     "lifeos-pwa.firebasestorage.app",
   messagingSenderId: "70872415259",
-  appId: "1:70872415259:web:2db666bc97c8204a544cbe"
+  appId:             "1:70872415259:web:2db666bc97c8204a544cbe"
 };
 
 // ── Firebase state ──
@@ -207,16 +202,6 @@ function showSyncStatus(status) {
 // Start Firebase on load
 initFirebase();
 
-=======
-      icon: './icons/icon-192.png',
-      badge: './icons/icon-192.png'
-    });
-  }
-}
-// Check on load
-setTimeout(checkAndNotify, 3000);
-
->>>>>>> 7d8b60af2baaf439e35b20a02307ba0931a3e784
 
 // ══════════════════════════════════════════
 // LIFEOS v5 — FULL JS ENGINE
@@ -258,7 +243,6 @@ if(!SH.routines||!SH.routines.length) SH.routines=defaultRoutines();
 if(SH.mealWeekOffset===undefined) SH.mealWeekOffset=0;
 if(SH.calMonthOffset===undefined) SH.calMonthOffset=0;
 
-<<<<<<< HEAD
 function save(){
   localStorage.setItem(uKey(), JSON.stringify(U));
   saveToFirebase();
@@ -267,10 +251,6 @@ function saveShared(){
   localStorage.setItem(shKey(), JSON.stringify(SH));
   saveToFirebase();
 }
-=======
-function save(){ localStorage.setItem(uKey(), JSON.stringify(U)); }
-function saveShared(){ localStorage.setItem(shKey(), JSON.stringify(SH)); }
->>>>>>> 7d8b60af2baaf439e35b20a02307ba0931a3e784
 
 function reloadUser(){
   U = JSON.parse(localStorage.getItem(uKey())||'{}');
@@ -299,10 +279,7 @@ function switchUser(uid){
   setFC(U.fc||'all', document.getElementById('fc'+(U.fc==='formal'?'Formal':U.fc==='casual'?'Casual':'All')));
   closeAllSheets();
   renderAll();
-<<<<<<< HEAD
   listenFirebase();
-=======
->>>>>>> 7d8b60af2baaf439e35b20a02307ba0931a3e784
   toast(`Switched to ${isS?'Syamala':'Harshit'}'s profile`);
 }
 
@@ -614,7 +591,6 @@ function renderToday(){
   // Also standalone outfits
   const solos=U.outfits.filter(o=>o.status==='clean');
 
-<<<<<<< HEAD
   // ── Hero card elements (new HTML structure) ──
   const heroImgWrap = document.getElementById('heroImgWrap');
   const heroItems   = document.getElementById('heroItems');
@@ -631,19 +607,10 @@ function renderToday(){
     if(heroItems)    heroItems.innerHTML='';
     if(btnWear)      btnWear.style.display='none';
     if(btnNext)      btnNext.style.display='none';
-=======
-  const outfitBody=document.getElementById('outfitBody');
-  const outfitActions=document.getElementById('outfitActions');
-
-  if(!avail.length&&!solos.length){
-    outfitBody.innerHTML=`<div class="empty-state" style="padding:20px 0;"><div class="es-icon">👔</div><div class="es-body">Add clothes in your Closet<br>to get daily outfit suggestions.</div></div>`;
-    outfitActions.style.display='none';
->>>>>>> 7d8b60af2baaf439e35b20a02307ba0931a3e784
   } else {
     const idx=suggestionIdx%(avail.length||1);
     if(avail.length){
       const{s,p,sc}=avail[idx];
-<<<<<<< HEAD
       const isToday=todaySet.has(s.id+'|'+p.id);
       const sHasPhoto=s.photo&&s.photo.startsWith('data:');
       const pHasPhoto=p.photo&&p.photo.startsWith('data:');
@@ -683,25 +650,6 @@ function renderToday(){
   }
 
   // ── Bento stats ──
-=======
-      const{mini,dot}=scoreLabel(sc);
-      const isToday=todaySet.has(s.id+'|'+p.id);
-      outfitBody.innerHTML=`<div class="oc-outfit">
-        <div class="oc-icons">${shirtSVG(s.color,38)}${pantSVG(p.color,38)}</div>
-        <div class="oc-names">
-          <div class="oc-name1">${s.name}</div>
-          <div class="oc-name2">with ${p.name}</div>
-        </div>
-        <span class="oc-harm ${dot}" style="background:${sc>=80?'var(--green-s)':sc>=65?'var(--amber-s)':'var(--sky-s)'};color:${sc>=80?'var(--green)':sc>=65?'var(--amber)':'var(--sky)'};">${mini}</span>
-      </div>`;
-      document.getElementById('btnWearToday').textContent=isToday?'Worn Today ✓':'Wear Today ✦';
-      document.getElementById('btnWearToday').style.color=isToday?'var(--green)':'var(--accent)';
-    }
-    outfitActions.style.display='flex';
-  }
-
-  // Bento
->>>>>>> 7d8b60af2baaf439e35b20a02307ba0931a3e784
   const totalItems=U.shirts.length+U.pants.length+U.outfits.length;
   document.getElementById('b-items').textContent=totalItems;
   document.getElementById('b-combos').textContent=avail.length;
