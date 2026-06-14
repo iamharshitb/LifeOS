@@ -32,6 +32,7 @@
 <div class="amb">
   <div class="amb-orb amb-1"></div>
   <div class="amb-orb amb-2"></div>
+  <div class="amb-orb amb-3"></div>
 </div>
 
 <div id="app">
@@ -41,7 +42,11 @@
       <span class="icon icon-fill" style="font-size:22px;color:var(--primary);">apps</span>
       <div class="hdr-title">LifeOS</div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;">
+    <div class="hdr-right">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">
+        <span class="icon" id="themeIcon">dark_mode</span>
+      </button>
+      <div id="syncDot" title="Sync status" style="width:7px;height:7px;border-radius:50%;background:var(--outline);transition:background .5s;flex-shrink:0;"></div>
       <div class="user-pill" onclick="openSheet('userSheet')">
         <div class="user-avatar" id="hdrAvatar">H</div>
         <div class="user-name" id="hdrName">Harshit</div>
@@ -161,6 +166,7 @@
       <div class="sec-title">Life <span>Hub</span></div>
       <div class="life-tabs">
         <button class="lt-btn on" onclick="showLife('groceries',this)">🛒 Groceries</button>
+        <button class="lt-btn" onclick="showLife('tasks',this)">✅ Tasks</button>
         <button class="lt-btn" onclick="showLife('meals',this)">🍽 Meals</button>
         <button class="lt-btn" onclick="showLife('calendar',this)">📅 Calendar</button>
       </div>
@@ -186,6 +192,25 @@
           Share List on WhatsApp
         </button>
         <button class="groc-clear-btn" onclick="clearBoughtItems()">Clear bought items</button>
+      </div>
+
+      <!-- TASKS -->
+      <div class="life-section" id="ls-tasks">
+        <div class="task-input-row">
+          <input class="groc-input" id="taskInput" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTask()">
+          <select class="groc-input" id="taskWho" style="width:100px;flex:none;">
+            <option value="both">👫 Both</option>
+            <option value="H">🙋 Harshit</option>
+            <option value="S">🙋 Syamala</option>
+          </select>
+          <button class="groc-add-btn" onclick="addTask()">+</button>
+        </div>
+        <!-- Person filter -->
+        <div class="task-who-row" id="taskWhoFilter"></div>
+        <!-- Task list -->
+        <div id="taskList"></div>
+        <!-- Clear done -->
+        <button class="groc-clear-btn" onclick="clearDoneTasks()" style="margin-top:4px;">Clear completed tasks</button>
       </div>
 
       <!-- MEALS -->

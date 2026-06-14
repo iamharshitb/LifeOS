@@ -173,6 +173,7 @@ function listenFirebase() {
         localStorage.setItem(shKey(), JSON.stringify(SH));
         // Re-render whichever life section is active
         if (document.getElementById('ls-groceries').classList.contains('active')) renderGroceries();
+        if (document.getElementById('ls-tasks').classList.contains('active')) renderTasks();
         if (document.getElementById('ls-meals').classList.contains('active')) buildMealGrid();
         if (document.getElementById('ls-calendar').classList.contains('active')) buildCalendar();
         showSyncStatus('synced');
@@ -238,6 +239,7 @@ if(!U.washDay) U.washDay=null;
 if(!U.streak) U.streak=1;
 if(!U.fc) U.fc='all';
 ['groceries','events'].forEach(k=>{ if(!SH[k]) SH[k]=[]; });
+if(!SH.tasks) SH.tasks=[];
 if(!SH.meals) SH.meals={};
 if(!SH.routines||!SH.routines.length) SH.routines=defaultRoutines();
 if(SH.mealWeekOffset===undefined) SH.mealWeekOffset=0;
@@ -318,6 +320,7 @@ function showLife(tab, btn){
   document.getElementById('ls-'+tab).classList.add('active');
   btn.classList.add('on');
   if(tab==='groceries') renderGroceries();
+  if(tab==='tasks')     renderTasks();
   if(tab==='meals') buildMealGrid();
   if(tab==='calendar') buildCalendar();
 }
@@ -1083,6 +1086,102 @@ function shareWhatsApp(){
   window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
 }
 
+// ── TASKS ─────────────────────────────────────
+let taskFilter = 'all';
+
+function addTask(){
+  const inp = document.getElementById('taskInput');
+  const name = inp.value.trim();
+  if(!name){ toast('Enter a task name'); return; }
+  const who = document.getElementById('taskWho').value;
+  SH.tasks = SH.tasks || [];
+  SH.tasks.push({ id:'tk'+Date.now(), name, who, done:false });
+  saveShared();
+  inp.value = '';
+  renderTasks();
+  toast('Task added');
+}
+
+function renderTasks(){
+  SH.tasks = SH.tasks || [];
+  renderTaskFilters();
+  const el = document.getElementById('taskList');
+  if(!el) return;
+
+  let items = taskFilter === 'all'
+    ? SH.tasks
+    : SH.tasks.filter(t => t.who === taskFilter || t.who === 'both');
+
+  if(!items.length){
+    el.innerHTML = `<div class="empty-state" style="padding:30px 0;">
+      <div class="es-icon">✅</div>
+      <div class="es-title">No tasks yet</div>
+      <div class="es-body">Add tasks above and assign<br>them to yourself, Syamala, or both.</div>
+    </div>`;
+    return;
+  }
+
+  // Pending first, done at bottom
+  const pending = items.filter(t => !t.done);
+  const done    = items.filter(t => t.done);
+
+  const whoLabel = { H:'Harshit', S:'Syamala', both:'Both' };
+  const whoClass = { H:'twb-H', S:'twb-S', both:'twb-both' };
+  const whoEmoji = { H:'🙋', S:'🙋‍♀️', both:'👫' };
+
+  el.innerHTML = [...pending, ...done].map(t => `
+    <div class="task-item${t.done?' done':''}">
+      <div class="task-check" onclick="toggleTask('${t.id}')">${t.done ? '✓' : ''}</div>
+      <div class="task-info">
+        <div class="task-name">${t.name}</div>
+        <span class="task-who-badge ${whoClass[t.who]||'twb-both'}">
+          ${whoEmoji[t.who]||'👫'} ${whoLabel[t.who]||'Both'}
+        </span>
+      </div>
+      <button class="task-del" onclick="deleteTask('${t.id}')">×</button>
+    </div>`).join('');
+}
+
+function renderTaskFilters(){
+  const el = document.getElementById('taskWhoFilter');
+  if(!el) return;
+  const filters = [
+    { val:'all', label:'All' },
+    { val:'H',   label:'Harshit' },
+    { val:'S',   label:'Syamala' },
+    { val:'both',label:'Shared' }
+  ];
+  el.innerHTML = filters.map(f =>
+    `<button class="twf-btn${taskFilter===f.val?' on':''}" onclick="setTaskFilter('${f.val}',this)">${f.label}</button>`
+  ).join('');
+}
+
+function setTaskFilter(f){
+  taskFilter = f;
+  renderTasks();
+}
+
+function toggleTask(id){
+  const t = (SH.tasks||[]).find(x => x.id === id);
+  if(!t) return;
+  t.done = !t.done;
+  saveShared();
+  renderTasks();
+}
+
+function deleteTask(id){
+  SH.tasks = (SH.tasks||[]).filter(x => x.id !== id);
+  saveShared();
+  renderTasks();
+}
+
+function clearDoneTasks(){
+  SH.tasks = (SH.tasks||[]).filter(t => !t.done);
+  saveShared();
+  renderTasks();
+  toast('Completed tasks cleared');
+}
+
 // ── MEAL PLANNER ──────────────────────────────
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const SLOTS=['Breakfast','Lunch','Dinner'];
@@ -1298,7 +1397,24 @@ function renderAll(){
   runCalc();
 }
 
+// ── THEME TOGGLE ──────────────────────────────
+function initTheme(){
+  const saved = localStorage.getItem('lifeos-theme') || 'light';
+  if(saved === 'dark'){
+    document.body.classList.add('dark-mode');
+    const icon = document.getElementById('themeIcon');
+    if(icon) icon.textContent = 'light_mode';
+  }
+}
+function toggleTheme(){
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('lifeos-theme', isDark ? 'dark' : 'light');
+  const icon = document.getElementById('themeIcon');
+  if(icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+}
+
 // ── INIT ──────────────────────────────────────
+initTheme();
 updateWardrobeTabs();
 setFC(U.fc||'all', document.getElementById('fc'+(U.fc==='formal'?'Formal':U.fc==='casual'?'Casual':'All')));
 renderAll();
