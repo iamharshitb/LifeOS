@@ -1398,6 +1398,21 @@ function renderAll(){
 }
 
 // ── THEME TOGGLE ──────────────────────────────
+function refreshApp(){
+  toast('Checking for updates…');
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(reg => reg.update());
+    });
+    // Give SW a moment to fetch, then reload
+    setTimeout(() => {
+      window.location.reload(true);
+    }, 1200);
+  } else {
+    window.location.reload(true);
+  }
+}
+
 function initTheme(){
   const saved = localStorage.getItem('lifeos-theme') || 'light';
   if(saved === 'dark'){

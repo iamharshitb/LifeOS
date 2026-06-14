@@ -2,7 +2,7 @@
 //  LifeOS Service Worker — Offline-first, Cache-first
 // ══════════════════════════════════════════════════════════
 
-const CACHE_NAME   = 'lifeos-v1';
+const CACHE_NAME   = 'lifeos-v2';
 const FONT_CACHE   = 'lifeos-fonts-v1';
 
 // Core app shell — everything needed to work offline
